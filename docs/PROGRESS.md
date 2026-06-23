@@ -6,8 +6,8 @@
 
 ## STATUS PROYEK
 
-**Fase saat ini:** Belum mulai development
-**Terakhir diupdate:** -
+**Fase saat ini:** Fase 1 — Setup & Fondasi
+**Terakhir diupdate:** 2026-06-24
 **Developer:** Solo developer
 
 ---
@@ -15,18 +15,18 @@
 ## FASE 1 — SETUP & FONDASI
 
 ### 1.1 Inisialisasi Project
-- [ ] Buat project Next.js 15 dengan TypeScript dan Tailwind CSS
-- [ ] Setup ESLint + Prettier
-- [ ] Setup struktur folder sesuai PROJECT.md bagian 3
-- [ ] Buat file `.env.local` dari template di PROJECT.md bagian 16
-- [ ] Push ke repository Git
+- [x] Buat project Next.js 15 dengan TypeScript dan Tailwind CSS (Next.js 16.2.9, React 19)
+- [x] Setup ESLint + Prettier (dengan prettier-plugin-tailwindcss)
+- [x] Setup struktur folder sesuai PROJECT.md bagian 3
+- [x] Buat file `.env.local` dari template di PROJECT.md bagian 16
+- [ ] Push ke repository Git (repo lokal siap, remote belum dikonfigurasi)
 
 ### 1.2 Database
-- [ ] Buat akun dan project di Neon
-- [ ] Inisialisasi Prisma (`npx prisma init`)
-- [ ] Buat schema Prisma sesuai PROJECT.md bagian 4
-- [ ] Jalankan migrasi pertama (`npx prisma migrate dev`)
-- [ ] Seed data awal: admin user, tema-tema awal
+- [ ] Buat akun dan project di Neon (manual — isi DATABASE_URL & DATABASE_URL_UNPOOLED di .env.local)
+- [x] Inisialisasi Prisma (schema dibuat manual, v7.8.0)
+- [x] Buat schema Prisma sesuai PROJECT.md bagian 4 (+ field password di users, + component_key unique di themes)
+- [ ] Jalankan migrasi pertama (`npm run db:migrate -- --name init`)
+- [ ] Seed data awal: admin user, tema-tema awal (`npm run db:seed`)
 
 ### 1.3 Autentikasi
 - [ ] Install dan konfigurasi NextAuth.js v5

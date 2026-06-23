@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  user
+  admin
+}
+
+enum ThemeType {
+  standard
+  exclusive
+}
+
+enum Package {
+  trial
+  basic
+  pro
+  studio
+}
+
+enum OrderStatus {
+  pending
+  active
+  expired
+}
+
+enum AssistStatus {
+  idle
+  waiting_admin
+  in_progress
+  waiting_review
+  done
+}
+
+enum RsvpStatus {
+  pending
+  hadir
+  tidak
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  waiting_review
+  closed
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email          String   @unique
+  name           String
+  phone_wa       String
+  password       String
+  role           Role     @default(user)
+  email_verified Boolean  @default(false)
+  notif_rsvp     Boolean  @default(false)
+  notif_ucapan   Boolean  @default(false)
+  created_at     DateTime @default(now())
+
+  orders Order[]
+
+  @@map("users")
+}
+
+model Theme {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  category      String
+  type          ThemeType @default(standard)
+  component_key String    @unique
+  preview_url   String?
+  og_url        String?
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now())
+
+  orders Order[]
+
+  @@map("themes")
+}
+
+model Order {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String       @db.Uuid
+  theme_id       String       @db.Uuid
+  package        Package
+  status         OrderStatus  @default(pending)
+  payment_id     String?
+  slug           String       @unique
+  assist_status  AssistStatus @default(idle)
+  revision_count Int          @default(0)
+  expires_at     DateTime?
+  created_at     DateTime     @default(now())
+  upgraded_from  Package?
+  upgraded_at    DateTime?
+
+  user           User          @relation(fields: [user_id], references: [id])
+  theme          Theme         @relation(fields: [theme_id], references: [id])
+  invitation     Invitation?
+  guests         Guest[]
+  messages       Message[]
+  assist_tickets AssistTicket[]
+
+  @@map("orders")
+}
+
+model Invitation {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id     String    @unique @db.Uuid
+  content      Json
+  published_at DateTime?
+  updated_at   DateTime  @default(now()) @updatedAt
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("invitations")
+}
+
+model Guest {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id    String     @db.Uuid
+  name        String
+  token       String     @unique
+  rsvp_status RsvpStatus @default(pending)
+  rsvp_at     DateTime?
+  created_at  DateTime   @default(now())
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("guests")
+}
+
+model Message {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id   String   @db.Uuid
+  guest_name String
+  content    String
+  created_at DateTime @default(now())
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("messages")
+}
+
+model AssistTicket {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id      String       @db.Uuid
+  notes         String?
+  status        TicketStatus @default(open)
+  revision_note String?
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @default(now()) @updatedAt
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("assist_tickets")
+}
