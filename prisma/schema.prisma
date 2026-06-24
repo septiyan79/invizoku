@@ -74,15 +74,16 @@ model User {
 }
 
 model Theme {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String
-  category      String
-  type          ThemeType @default(standard)
-  component_key String    @unique
-  preview_url   String?
-  og_url        String?
-  is_active     Boolean   @default(true)
-  created_at    DateTime  @default(now())
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  event_categories String[]
+  style_tag        String
+  type             ThemeType @default(standard)
+  component_key    String    @unique
+  preview_url      String?
+  og_url           String?
+  is_active        Boolean   @default(true)
+  created_at       DateTime  @default(now())
 
   orders Order[]
 
