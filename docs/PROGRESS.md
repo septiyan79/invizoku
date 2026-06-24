@@ -22,11 +22,11 @@
 - [ ] Push ke repository Git (repo lokal siap, remote belum dikonfigurasi)
 
 ### 1.2 Database
-- [ ] Buat akun dan project di Neon (manual — isi DATABASE_URL & DATABASE_URL_UNPOOLED di .env.local)
-- [x] Inisialisasi Prisma (schema dibuat manual, v7.8.0)
-- [x] Buat schema Prisma sesuai PROJECT.md bagian 4 (+ field password di users, + component_key unique di themes)
-- [ ] Jalankan migrasi pertama (`npm run db:migrate -- --name init`)
-- [ ] Seed data awal: admin user, tema-tema awal (`npm run db:seed`)
+- [x] Buat akun dan project di Neon
+- [x] Inisialisasi Prisma (v5.22.0 — downgrade dari v7 karena breaking change besar)
+- [x] Buat schema Prisma sesuai PROJECT.md bagian 4 (+ password di users, + event_categories/style_tag di themes)
+- [x] Jalankan migrasi pertama (20260624125153_init)
+- [x] Seed data awal: 1 admin user + 6 starter theme
 
 ### 1.3 Autentikasi
 - [ ] Install dan konfigurasi NextAuth.js v5
