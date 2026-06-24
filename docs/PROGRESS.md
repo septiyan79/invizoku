@@ -7,7 +7,7 @@
 ## STATUS PROYEK
 
 **Fase saat ini:** Fase 1 — Setup & Fondasi
-**Terakhir diupdate:** 2026-06-24
+**Terakhir diupdate:** 2026-06-24 (sesi 2)
 **Developer:** Solo developer
 
 ---
@@ -19,7 +19,7 @@
 - [x] Setup ESLint + Prettier (dengan prettier-plugin-tailwindcss)
 - [x] Setup struktur folder sesuai PROJECT.md bagian 3
 - [x] Buat file `.env.local` dari template di PROJECT.md bagian 16
-- [ ] Push ke repository Git (repo lokal siap, remote belum dikonfigurasi)
+- [x] Push ke repository Git (github.com/septiyan79/invizoku)
 
 ### 1.2 Database
 - [x] Buat akun dan project di Neon
@@ -29,15 +29,18 @@
 - [x] Seed data awal: 1 admin user + 6 starter theme
 
 ### 1.3 Autentikasi
-- [ ] Install dan konfigurasi NextAuth.js v5
-- [ ] Setup credentials provider (email + password)
-- [ ] Buat halaman `/login`
-- [ ] Buat halaman `/register` (dengan field nomor WA wajib)
-- [ ] Buat halaman `/forgot-password`
-- [ ] Buat halaman `/reset-password`
-- [ ] Buat halaman `/verify-email`
-- [ ] Setup Resend untuk kirim email verifikasi & reset password
-- [ ] Implementasi middleware route guard (dashboard, admin)
+- [x] Install dan konfigurasi NextAuth.js v5 (beta.31, JWT sessions, split config Edge/Node)
+- [x] Setup credentials provider (email + password) — `auth.ts` + `auth.config.ts`
+- [x] Buat halaman `/login`
+- [x] Buat halaman `/register` (dengan field nomor WA wajib)
+- [x] Buat halaman `/forgot-password`
+- [x] Buat halaman `/reset-password`
+- [x] Buat halaman `/verify-email`
+- [x] Setup Resend untuk kirim email verifikasi & reset password (`lib/mail.ts`)
+- [x] Implementasi middleware route guard (dashboard, admin, profil, checkout)
+- [x] API routes: `/api/register`, `/api/auth/verify-email`, `/api/auth/forgot-password`, `/api/auth/reset-password`
+- [x] Token JWT via `jose` dengan invalidasi token reset password (ph = 8 char terakhir hash)
+- [x] NEXTAUTH_SECRET sudah di-generate dan diisi di `.env.local`
 
 ### 1.4 Setup Integrasi Eksternal
 - [ ] Buat akun Cloudinary, simpan credentials ke `.env`
@@ -275,7 +278,10 @@
 > Gunakan bagian ini untuk mencatat keputusan teknis yang dibuat selama development, bug yang ditemukan, atau hal-hal yang perlu diingat.
 
 ```
-[Tanggal] - [Catatan]
+2026-06-24 - Prisma 7 memiliki breaking change besar (hapus url/directUrl dari schema, wajib prisma.config.ts + driver adapter). Solusi: downgrade ke Prisma 5.22.0.
+2026-06-24 - dotenv-cli diinstall untuk load .env.local ke semua perintah prisma CLI (Prisma 7 juga hapus --env-file flag).
+2026-06-24 - Fase 1.3: NextAuth split config (auth.config.ts untuk Edge middleware, auth.ts untuk Node.js dengan Prisma). Token reset password menggunakan 8 char terakhir bcrypt hash sebagai invalidation marker — tidak butuh tabel DB terpisah.
+2026-06-24 - Folder path dengan [brackets] di PowerShell perlu .NET IO method: [System.IO.File]::WriteAllText(). PS treats [] as regex wildcard.
 ```
 
 ---
