@@ -130,15 +130,45 @@ created_at      TIMESTAMP DEFAULT now()
 
 ### Tabel `themes`
 ```sql
-id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
-name            VARCHAR NOT NULL
-category        VARCHAR NOT NULL        -- 'wedding', 'birthday', 'aqiqah', dll
-type            ENUM('standard', 'exclusive') DEFAULT 'standard'
-component_key   VARCHAR NOT NULL        -- nama React component, e.g. 'WeddingElegant'
-preview_url     VARCHAR                 -- thumbnail untuk katalog (Cloudinary)
-og_url          VARCHAR                 -- OG image untuk share (Cloudinary)
-is_active       BOOLEAN DEFAULT true
-created_at      TIMESTAMP DEFAULT now()
+id                UUID PRIMARY KEY DEFAULT gen_random_uuid()
+name              VARCHAR NOT NULL
+event_categories  TEXT[] NOT NULL         -- array kategori acara: ['wedding','birthday']
+                                          -- satu tema bisa masuk beberapa kategori acara
+style_tag         VARCHAR NOT NULL        -- satu gaya tema: 'anime', 'minimalis', 'elegan', dll
+type              ENUM('standard', 'exclusive') DEFAULT 'standard'
+component_key     VARCHAR NOT NULL        -- nama React component, e.g. 'WeddingElegant'
+preview_url       VARCHAR                 -- thumbnail untuk katalog (Cloudinary)
+og_url            VARCHAR                 -- OG image untuk share (Cloudinary)
+is_active         BOOLEAN DEFAULT true
+created_at        TIMESTAMP DEFAULT now()
+```
+
+**Catatan perubahan skema (dari versi sebelumnya):**
+- Field `category` (VARCHAR tunggal) diganti dengan `event_categories` (TEXT array)
+  → Satu tema bisa masuk ke beberapa kategori acara sekaligus
+  → Contoh: `event_categories = ['wedding', 'tunangan']`
+- Field `style_tag` (VARCHAR tunggal, bukan array)
+  → Satu tema hanya punya satu gaya tema
+  → Contoh: `style_tag = 'anime'`
+
+**Nilai valid untuk `event_categories`:**
+`wedding` · `tunangan` · `birthday` · `aqiqah` · `khitan` · `tasyakuran` · `wisuda`
+
+**Nilai valid untuk `style_tag`:**
+`elegan` · `minimalis` · `tradisional-adat` · `anime-kartun` · `floral` · `islami` · `olahraga` · `modern`
+
+**Query filter katalog (kombinasi acara + gaya):**
+```sql
+-- Filter wedding AND anime
+SELECT * FROM themes
+WHERE 'wedding' = ANY(event_categories)
+AND style_tag = 'anime-kartun'
+AND is_active = true;
+
+-- Filter wedding saja (semua gaya)
+SELECT * FROM themes
+WHERE 'wedding' = ANY(event_categories)
+AND is_active = true;
 ```
 
 ### Tabel `orders`
@@ -561,23 +591,97 @@ undangan/
 
 ## 15. KEAMANAN
 
-### Middleware & route guards
-- `/dashboard/*` — Cek session NextAuth, redirect ke `/login?callbackUrl=...` jika belum login
-- `/admin/*` — Cek session + `role === 'admin'`, redirect ke `/` jika bukan admin
-- Setelah login dari checkout: gunakan `callbackUrl` di NextAuth untuk kembali ke halaman checkout
+> Tanda **[KRITIS]** = wajib sebelum launch. **[TINGGI]** = wajib setelah launch. **[SEDANG]** = saat sistem stabil.
 
-### Webhook Midtrans
-- **Selalu verifikasi signature SHA-512** sebelum proses apapun (lihat bagian 10)
+### Autentikasi & sesi [KRITIS]
+- Password di-hash bcrypt — NextAuth menangani ini otomatis
+- JWT session token disimpan sebagai httpOnly cookie — tidak bisa diakses JavaScript
+- Tambahkan `secret` yang kuat di config NextAuth, jangan di-expose
+- Batas percobaan login: maksimal 5x gagal dalam 15 menit → lockout sementara
+  - Gunakan: `@upstash/ratelimit` atau middleware custom
+- Verifikasi email wajib sebelum akun bisa checkout — jangan biarkan akun unverified bisa beli
+- Session expiry: 7 hari idle logout, 30 hari maksimal
+
+### Middleware & route guards [KRITIS]
+- `/dashboard/*` — cek session NextAuth di server, redirect ke `/login?callbackUrl=...` jika belum login
+- `/admin/*` — cek session + `role === 'admin'` di server, return 403 jika bukan admin
+- Jangan andalkan route guard di client saja — selalu validasi di server
+- Setelah login dari checkout: gunakan `callbackUrl` di NextAuth agar user kembali ke halaman checkout
+
+### Ownership check di setiap API route [KRITIS]
+- User hanya boleh akses/edit resource miliknya sendiri
+- Selalu tambahkan filter `user_id` di setiap query yang menyentuh data user:
+  ```typescript
+  // BENAR — user tidak bisa akses order orang lain
+  await prisma.order.findFirst({
+    where: { id: orderId, user_id: session.user.id }
+  })
+  // SALAH — hanya filter by orderId saja
+  await prisma.order.findFirst({ where: { id: orderId } })
+  ```
+- Admin boleh akses semua resource — cek `role === 'admin'` dulu sebelum skip ownership check
+
+### Webhook Midtrans [KRITIS]
+- Selalu verifikasi signature SHA-512 sebelum proses apapun (lihat bagian 10)
 - Tolak dengan status 403 jika signature tidak cocok
 - Log semua percobaan request yang gagal verifikasi
+- Jangan proses ulang transaksi yang sudah diproses (idempotency check via `payment_id`)
 
-### Upload file
-- Validasi tipe file di server (bukan hanya di client)
-- Validasi ukuran maks 5MB di server
-- Hanya izinkan JPG, PNG, WEBP
+### Upload file [KRITIS]
+- Validasi tipe file di server — cek MIME type sungguhan, bukan hanya ekstensi
+  - Izinkan: `image/jpeg`, `image/png`, `image/webp` saja
+- Validasi ukuran file di server sebelum upload ke Cloudinary — maksimal 5MB
+- Upload ke Cloudinary via signed upload token yang di-generate di server
+  - Jangan expose Cloudinary API secret ke client
+  - Generate `signed_upload_preset` di server, client hanya terima token terbatas waktu
+- Validasi batas jumlah foto sesuai paket di server — jangan hanya di UI
 
-### Rate limiting
-- API `/api/rsvp` dan `/api/ucapan` — implementasi rate limiting (rawan spam dari tamu)
+### Input validation & sanitasi [KRITIS]
+- Validasi semua input dengan Zod sebelum masuk ke database
+  ```typescript
+  const schema = z.object({
+    name: z.string().min(1).max(100).trim(),
+    message: z.string().max(500).trim(),
+  })
+  ```
+- Sanitasi konten buku tamu & ucapan — strip HTML tags untuk mencegah XSS
+  - Gunakan: `DOMPurify` (client) atau `sanitize-html` (server)
+- Prisma ORM otomatis mencegah SQL injection — selalu gunakan Prisma, jangan raw query
+- Environment variables dengan data sensitif tidak boleh punya prefix `NEXT_PUBLIC_`
+
+### Halaman undangan (output publik) [TINGGI]
+- Tambahkan `noindex` meta tag — data pribadi user tidak boleh terindeks Google
+- Rate limiting di endpoint RSVP & ucapan — satu IP maksimal 10 request per menit
+- Validasi token tamu di server — token tidak valid atau expired langsung return 404
+- Undangan expired return 404 (bukan 200 dengan pesan error) — hindari data leak
+- Jangan tampilkan detail error ke user — log di server, tampilkan pesan generik
+
+### Rate limiting [TINGGI]
+- `/api/rsvp` — maks. 10 request per IP per menit
+- `/api/ucapan` — maks. 10 request per IP per menit
+- `/api/auth/login` (atau NextAuth signIn) — maks. 5 request per IP per 15 menit
+- Gunakan: `@upstash/ratelimit` + Vercel Edge Middleware
+
+### HTTP security headers [TINGGI]
+Tambahkan di `next.config.js`:
+```javascript
+const securityHeaders = [
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-XSS-Protection', value: '1; mode=block' },
+  {
+    key: 'Content-Security-Policy',
+    value: "default-src 'self'; img-src 'self' res.cloudinary.com; ..."
+  },
+]
+```
+
+### Monitoring & logging [SEDANG]
+- Log semua kejadian keamanan: gagal login, webhook gagal verifikasi, akses denied ke admin
+- Setup alert jika ada lonjakan error 4xx/5xx tiba-tiba
+- Gunakan: Vercel Analytics (built-in) + Sentry free tier untuk error tracking
+- Jangan log data sensitif (password, token, nomor rekening) di log apapun
 
 ---
 
