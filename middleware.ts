@@ -1,8 +1,7 @@
-import NextAuth from 'next-auth'
-import { authConfig } from '@/auth.config'
+// Deprecated: Next.js 16+ menggunakan proxy.ts. File ini dipertahankan untuk kompatibilitas.
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export const { auth: middleware } = NextAuth(authConfig)
-
-export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/profil/:path*', '/checkout/:path*'],
+export default function middleware(_request: NextRequest) {
+  return NextResponse.next()
 }
