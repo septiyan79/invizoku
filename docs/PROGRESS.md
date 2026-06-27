@@ -6,8 +6,8 @@
 
 ## STATUS PROYEK
 
-**Fase saat ini:** Fase 3 — Sistem Tema Undangan
-**Terakhir diupdate:** 2026-06-27 (sesi 4)
+**Fase saat ini:** Fase 5 — Dashboard User
+**Terakhir diupdate:** 2026-06-28 (sesi 5)
 **Developer:** Solo developer
 
 ---
@@ -107,7 +107,7 @@
 - [x] `components/theme-content/GuestBook.tsx` — kirim & tampilkan ucapan
 - [x] `components/theme-content/Watermark.tsx` — standalone, dipakai semua ThemeShell jika pkg === 'trial'
 - [ ] `hooks/useUpload.ts` — upload foto ke Cloudinary (dibutuhkan saat editor)
-- [ ] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
+- [x] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
 - [ ] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
 
 ### 3.2 Library Musik
@@ -158,7 +158,10 @@
 ### 4.3 Paket Uji Coba (Trial) ✅
 - [x] Cek eligibility di `/api/checkout` — query riwayat paid orders user
 - [x] Trial aktif langsung tanpa payment, invitation default dibuat seketika
-- [x] Fitur dibatasi di ThemeShell berdasarkan `pkg === 'trial'`
+- [x] Fitur dibatasi di ThemeShell berdasarkan `pkg === 'trial'` (RSVP, Angpao, Buku Tamu, Musik)
+- [x] `TrialGuard` — halaman `/undangan/[slug]` diblokir untuk non-pemilik (client-side session check)
+- [x] Checkout form refactor — trial sebagai banner CTA terpisah di atas grid, bukan opsi di dalam grid paket
+- [x] Success page — konten "langkah berikutnya" dibedakan antara trial dan berbayar, CTA trial langsung ke preview undangan
 
 ### 4.4 Lib & Config ✅
 - [x] `lib/packages.ts` — config harga, durasi, dan getExpiresAt()
@@ -173,31 +176,39 @@
 
 ## FASE 5 — DASHBOARD USER
 
-### 5.1 Layout & Navigasi Dashboard
-- [ ] Layout dashboard dengan sidebar navigasi
-- [ ] Guard: redirect ke login jika belum auth
+### 5.1 Layout & Navigasi Dashboard ✅
+- [x] Layout dashboard dengan sidebar navigasi (`DashboardShell.tsx` — client component)
+- [x] Guard: redirect ke login jika belum auth (di layout.tsx server + middleware)
+- [x] Sidebar: order info card, nav links dinamis per paket, upgrade CTA, user info, logout
+- [x] Mobile: hamburger + slide sidebar + overlay
+- [x] `SessionProvider` ditambahkan ke root layout (dibutuhkan useSession & signOut)
 
-### 5.2 Halaman Utama Dashboard (`/dashboard`)
-- [ ] Ringkasan status undangan (aktif/expired/trial)
-- [ ] Info masa aktif + countdown expired
-- [ ] Tombol aksi cepat (edit, lihat undangan, kelola tamu)
-- [ ] Banner upgrade jika masih trial atau Basic
+### 5.2 Halaman Utama Dashboard (`/dashboard`) ✅
+- [x] Greeting + jumlah undangan aktif
+- [x] Empty state jika belum punya undangan
+- [x] Order card per undangan: tema, paket, masa aktif, aksi cepat
+- [x] Banner "Mode Uji Coba" untuk trial (amber warning + upgrade CTA)
+- [x] ExpiryBadge merah jika <= 14 hari tersisa
+- [x] Quick links: buat undangan baru, profil
 
-### 5.3 Editor Undangan (`/dashboard/edit/[orderId]`)
-- [ ] Form isian data dasar sesuai schema JSONB tema
-- [ ] Tab "Elemen" untuk upload foto, pilih musik, setting angpao
-- [ ] Upload foto ke Cloudinary dengan validasi (tipe, ukuran, jumlah sesuai paket)
-- [ ] Preview real-time perubahan
-- [ ] Tombol "Publish" undangan
-- [ ] Auto-revalidate ISR setelah save
+### 5.3 Editor Undangan (`/dashboard/edit/[orderId]`) ✅
+- [x] `GET /api/undangan/[orderId]` — fetch order + invitation content (ownership check)
+- [x] `PATCH /api/undangan/[orderId]` — update content, merge dengan existing, revalidatePath ISR
+- [x] `PATCH ... { publish: true }` — set published_at, revalidate ISR
+- [x] Form data acara: wedding (mempelai, akad, resepsi), birthday (nama, usia, acara), aqiqah/khitan
+- [x] Hitung mundur (countdown_target) — datetime-local input
+- [x] Sticky save bar: status simpan, tombol Preview (new tab), Simpan, Publish (paid only)
+- [x] Tombol "Dipublikasi" indicator setelah publish
+- [x] Tab navigasi: "Data Acara" ↔ "Foto & Elemen"
+- [x] `/dashboard/edit/[orderId]/elemen` — shell dengan semua section (foto cover, galeri, musik, angpao, love story), gated per paket, upload belum diimplementasi
 
-### 5.4 Manajemen Tamu (`/dashboard/tamu/[orderId]`)
-- [ ] Input daftar tamu (nama)
-- [ ] Generate token unik per tamu
-- [ ] Tampilkan link personal per tamu (`/undangan/[slug]?token=xxx`)
-- [ ] Generate QR Code per tamu
-- [ ] Lihat status RSVP per tamu
-- [ ] Export daftar tamu + status RSVP
+### 5.4 Manajemen Tamu (`/dashboard/tamu/[orderId]`) ✅
+- [x] Input daftar tamu (nama) — single name + bulk textarea (mode toggle)
+- [x] Generate token unik per tamu — randomBytes(12).toString('hex') → 24 char
+- [x] Tampilkan link personal per tamu (`/undangan/[slug]?token=xxx`)
+- [x] Generate QR Code per tamu — react-qr-code (SVG, in modal)
+- [x] Lihat status RSVP per tamu — badge hadir/tidak/menunggu + stats bar
+- [x] Export daftar tamu + status RSVP — client-side CSV download (BOM UTF-8)
 
 ### 5.5 Halaman Bantuan Admin (`/dashboard/bantuan/[orderId]`)
 - [ ] Form upload data + catatan ke admin (hanya Pro & Studio)

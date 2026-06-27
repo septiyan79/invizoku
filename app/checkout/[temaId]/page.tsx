@@ -44,23 +44,12 @@ export default async function CheckoutPage({ params }: PageProps) {
         </span>
       </header>
 
-      <div className="max-w-xl mx-auto px-4 py-10">
-        {/* Tema dipilih */}
-        <div className="flex items-center gap-3 mb-8 p-4 bg-white rounded-xl border border-neutral-100">
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-[#EEF0F9] shrink-0">
-            <i className="ti ti-template text-[20px] text-[#4A5FA8]" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-[14px] font-medium text-neutral-800">{theme.name}</p>
-            <p className="text-[12px] text-neutral-400 mt-0.5">
-              {theme.event_categories.join(', ')} · {theme.style_tag}
-            </p>
-          </div>
-        </div>
-
+      {/* Mobile: single column max-w-xl | Desktop: wider untuk layout 2 kolom */}
+      <div className="max-w-xl md:max-w-4xl mx-auto px-4 py-8 md:py-12">
         <CheckoutForm
           themeId={theme.id}
           themeName={theme.name}
+          themeCategory={`${theme.event_categories.join(', ')} · ${theme.style_tag}`}
           isTrialEligible={isTrialEligible}
         />
       </div>

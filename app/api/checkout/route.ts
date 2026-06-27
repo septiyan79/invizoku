@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   const body = await req.json()
   const parsed = checkoutSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
+    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
   }
 
   const { themeId, package: pkg, slug } = parsed.data
@@ -60,6 +60,17 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: 'Paket uji coba hanya bisa digunakan sekali.' },
         { status: 403 }
+      )
+    }
+
+    // Cek duplikat trial untuk tema yang sama
+    const existingTrial = await prisma.order.findFirst({
+      where: { user_id: userId, theme_id: themeId, package: 'trial', status: 'active' },
+    })
+    if (existingTrial) {
+      return NextResponse.json(
+        { error: 'Kamu sudah punya uji coba untuk tema ini.' },
+        { status: 409 }
       )
     }
 

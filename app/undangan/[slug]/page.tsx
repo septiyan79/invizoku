@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { getThemeLoader } from '@/components/themes'
 import type { ThemeProps, InvitationData } from '@/types/invitation'
+import TrialGuard from './TrialGuard'
 
 // ISR — revalidate setiap jam, atau on-demand via revalidatePath()
 export const revalidate = 3600
@@ -75,9 +76,15 @@ export default async function UndanganPage({ params }: PageProps) {
     orderId: order.id,
   }
 
-  return (
+  const invitation = (
     <Suspense fallback={<InvitationSkeleton />}>
       <ThemeComponent {...props} />
     </Suspense>
   )
+
+  if (order.package === 'trial') {
+    return <TrialGuard ownerId={order.user_id}>{invitation}</TrialGuard>
+  }
+
+  return invitation
 }

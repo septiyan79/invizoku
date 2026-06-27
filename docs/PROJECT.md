@@ -497,6 +497,7 @@ Folder ini TIDAK di-deploy — hanya sebagai tempat kerja konversi. Setelah tema
 | Angpao digital               | ✗     | ✓     | ✓     | ✓      |
 | Musik latar (library)        | ✗     | ✓     | ✓     | ✓      |
 | Maps, Countdown, Save Cal    | ✗     | ✓     | ✓     | ✓      |
+| Edit data undangan & foto    | ✓     | ✓     | ✓     | ✓      |
 | Mode tamu simpel (URL nama)  | ✗     | ✓     | ✓     | ✓      |
 | Mode tamu lengkap (token DB) | ✗     | ✓     | ✓     | ✓      |
 | Link bisa disebar            | ✗     | ✓     | ✓     | ✓      |
@@ -507,6 +508,28 @@ Folder ini TIDAK di-deploy — hanya sebagai tempat kerja konversi. Setelah tema
 | SLA admin                    | ✗     | ✗     | 3x24j | Prioritas |
 | Notifikasi WA                | ✗     | ✓     | ✓     | ✓      |
 | Perpanjang masa aktif        | ✗     | ✓     | ✓     | ✓      |
+
+### Pengalaman self-edit pada paket Trial
+
+Trial user **dapat mengedit isi undangan** agar bisa merasakan experience self-edit secara nyata sebelum membeli — ini kunci konversi ke paket berbayar.
+
+**Yang BISA dilakukan user Trial di dashboard:**
+- Edit data undangan (nama, tanggal, lokasi, dll.)
+- Upload foto cover/hero (1 foto)
+- Upload foto galeri (maks. **2 foto** — enforce di server, bukan hanya di UI)
+
+**Yang TIDAK bisa dilakukan user Trial:**
+- Upload foto galeri lebih dari 2 → server return 403
+- Akses RSVP, Buku Tamu, Angpao, Musik latar, Love Story
+- Menyebarkan link ke tamu (halaman `/undangan/[slug]` diblokir untuk non-pemilik via `TrialGuard`)
+
+**Catatan implementasi — wajib diperhatikan saat Fase 5 (Dashboard):**
+- `PATCH /api/undangan/[orderId]`: trial boleh akses, tapi validasi field yang diizinkan
+- Upload foto cover: trial boleh akses (sama seperti paket berbayar)
+- Upload foto galeri: cek `order.package === 'trial'` + hitung foto existing di DB/Cloudinary, **tolak jika sudah ≥ 2** dengan response `{ error: "Upgrade ke paket berbayar untuk menambah lebih banyak foto." }`
+- Signed upload token Cloudinary tetap di-generate di server — jangan expose `CLOUDINARY_API_SECRET` ke client
+
+---
 
 ### Aturan upgrade/downgrade
 - Upgrade tersedia: Trial → Basic/Pro/Studio, Basic → Pro/Studio, Pro → Studio
@@ -822,8 +845,9 @@ const securityHeaders = [
 ## 16. VARIABEL ENVIRONMENT
 
 ```env
-# Database
+# Database (Neon — dua URL diperlukan: pooled untuk runtime, unpooled untuk migrasi)
 DATABASE_URL=
+DATABASE_URL_UNPOOLED=
 
 # Auth
 NEXTAUTH_SECRET=
@@ -866,6 +890,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 9. **Harga upgrade antar paket** — belum final, buat config tersendiri yang mudah diubah tanpa deploy ulang
 10. **Musik latar** — library bawaan, file audio disimpan sebagai static asset (`public/music/`), bukan di Cloudinary. Di DB disimpan sebagai `music_id` yang mereferensi `lib/music.ts`
 11. **Template undangan** — visual tema datang dari developer eksternal dalam format HTML/CSS/JS. Jangan buat ThemeShell baru sampai file HTML diterima. Yang disiapkan lebih dulu: `InvitationData` interface, semua `ThemeContent` components, registry, dan `Watermark` component
+12. **Dashboard trial** — Trial user BOLEH edit data undangan dan upload foto (cover + maks. 2 galeri). Saat Fase 5 (Dashboard) diimplementasikan: enforce batas 2 foto galeri di server (hitung foto existing sebelum izinkan upload baru), jangan hanya blokir di UI. Lihat Section 7 "Pengalaman self-edit pada paket Trial" untuk detail lengkap.
 
 ---
 

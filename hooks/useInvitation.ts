@@ -20,7 +20,7 @@ export function useInvitation(orderId: string) {
     setState((s) => ({ ...s, saving: true, error: null }))
     try {
       const res = await fetch(`/api/undangan/${orderId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       })

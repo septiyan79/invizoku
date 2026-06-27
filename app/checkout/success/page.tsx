@@ -23,6 +23,18 @@ export default async function SuccessPage({ searchParams }: PageProps) {
   const isPaid = order.package !== 'trial'
   const isTrial = order.package === 'trial'
 
+  const nextSteps = isTrial
+    ? [
+        { icon: 'ti-eye', text: 'Lihat preview undangan dengan konten contoh' },
+        { icon: 'ti-mood-smile', text: 'Nilai apakah tampilan tema ini cocok untukmu' },
+        { icon: 'ti-rocket', text: 'Upgrade ke paket berbayar jika sudah yakin' },
+      ]
+    : [
+        { icon: 'ti-edit', text: 'Isi data undangan (nama, tanggal, tempat)' },
+        { icon: 'ti-photo', text: 'Upload foto & pilih musik latar' },
+        { icon: 'ti-share', text: 'Publish dan bagikan link undangan' },
+      ]
+
   return (
     <div className="min-h-screen bg-[#FDF8F2] flex items-center justify-center px-4">
       <div className="max-w-sm w-full text-center">
@@ -61,14 +73,10 @@ export default async function SuccessPage({ searchParams }: PageProps) {
         {/* Next step info */}
         <div className="bg-white border border-neutral-100 rounded-xl p-4 text-left mb-6">
           <p className="text-[12px] font-medium text-neutral-600 mb-3 uppercase tracking-wider">
-            Langkah berikutnya
+            {isTrial ? 'Apa yang bisa kamu lakukan' : 'Langkah berikutnya'}
           </p>
           <div className="space-y-2.5">
-            {[
-              { icon: 'ti-edit', text: 'Isi data undangan (nama, tanggal, tempat)' },
-              { icon: 'ti-photo', text: 'Upload foto & pilih musik latar' },
-              { icon: 'ti-share', text: 'Publish dan bagikan link undangan' },
-            ].map((step) => (
+            {nextSteps.map((step) => (
               <div key={step.icon} className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-[#EEF0F9] flex items-center justify-center shrink-0">
                   <i className={`ti ${step.icon} text-[13px] text-[#4A5FA8]`} aria-hidden="true" />
@@ -80,11 +88,11 @@ export default async function SuccessPage({ searchParams }: PageProps) {
         </div>
 
         <Link
-          href="/dashboard"
+          href={isTrial ? `/undangan/${order.slug}` : '/dashboard'}
           className="block w-full py-3 rounded-xl text-[14px] font-medium text-white text-center transition-colors hover:opacity-90"
           style={{ background: '#4A5FA8' }}
         >
-          Mulai isi undangan
+          {isTrial ? 'Lihat preview undangan' : 'Mulai isi undangan'}
         </Link>
 
         <Link
