@@ -43,11 +43,12 @@
 - [x] NEXTAUTH_SECRET sudah di-generate dan diisi di `.env.local`
 
 ### 1.4 Setup Integrasi Eksternal
-- [ ] Buat akun Cloudinary, simpan credentials ke `.env`
-- [ ] Buat akun Midtrans Sandbox, simpan credentials ke `.env`
-- [ ] Buat akun Fonnte, simpan API key ke `.env`
-- [ ] Buat akun Resend, verifikasi domain, simpan API key ke `.env`
-- [ ] Test koneksi semua integrasi
+- [x] Buat akun Cloudinary, simpan credentials ke `.env`
+- [x] Buat akun Midtrans Sandbox, simpan credentials ke `.env`
+- [ ] Fonnte — ditunda, menunggu nomor WA baru aktif
+- [x] Resend akun sudah ada, API key sudah diisi (`onboarding@resend.dev` untuk dev)
+- [ ] Resend domain verification — ditunda, menunggu pembelian domain
+- [x] Test koneksi Resend (email verifikasi & reset password berfungsi)
 
 ---
 
