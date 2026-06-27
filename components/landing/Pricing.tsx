@@ -145,7 +145,7 @@ const faqs = [
 
 export default function Pricing() {
   return (
-    <section className="px-8 py-20 bg-[#FDF8F2] border-t border-neutral-100">
+    <section className="px-4 md:px-8 py-12 md:py-20 bg-[#FDF8F2] border-t border-neutral-100">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase text-[#C9A55A] bg-[#FDF4E8] border border-[#E8C98A] px-3 py-1 rounded-full mb-4">
@@ -161,7 +161,7 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
           {packages.map((pkg) => (
             <div
               key={pkg.id}
@@ -201,7 +201,7 @@ export default function Pricing() {
                 {pkg.features.map((f) => (
                   <li key={f.text} className="flex items-start gap-2 text-[11px] leading-relaxed">
                     <i
-                      className={`${f.available ? 'ti ti-check' : 'ti ti-x'} text-[13px] flex-shrink-0 mt-0.5 ${
+                      className={`${f.available ? 'ti ti-check' : 'ti ti-x'} text-[13px] shrink-0 mt-0.5 ${
                         f.available
                           ? pkg.goldCheck
                             ? 'text-[#C9A55A]'
@@ -244,11 +244,11 @@ export default function Pricing() {
         <p className="text-[13px] font-medium text-neutral-800 text-center mb-4">
           Yang sering ditanyakan sebelum beli
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {faqs.map((faq) => (
             <div key={faq.q} className="bg-neutral-50 rounded-xl p-4">
               <p className="text-[12px] font-medium text-neutral-800 mb-1.5 flex items-start gap-1.5">
-                <i className="ti ti-help-circle text-[#4A5FA8] text-[13px] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <i className="ti ti-help-circle text-[#4A5FA8] text-[13px] shrink-0 mt-0.5" aria-hidden="true" />
                 {faq.q}
               </p>
               <p className="text-[11px] text-neutral-500 leading-relaxed pl-5">{faq.a}</p>

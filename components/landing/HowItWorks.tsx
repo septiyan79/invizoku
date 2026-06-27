@@ -45,7 +45,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="cara-kerja" className="px-8 py-20">
+    <section id="cara-kerja" className="px-4 md:px-8 py-12 md:py-20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase text-[#C9A55A] bg-[#FDF4E8] border border-[#E8C98A] px-3 py-1 rounded-full mb-4">
@@ -61,13 +61,13 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-0 relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 relative">
           <div
-            className="absolute border-t border-dashed border-neutral-300 z-0"
+            className="absolute border-t border-dashed border-neutral-300 z-0 hidden md:block"
             style={{ top: 22, left: 'calc(33.33% - 12px)', width: 'calc(33.33% + 24px)' }}
           />
           <div
-            className="absolute border-t border-dashed border-neutral-300 z-0"
+            className="absolute border-t border-dashed border-neutral-300 z-0 hidden md:block"
             style={{ top: 22, left: 'calc(66.66% - 12px)', width: 'calc(33.33% + 24px)' }}
           />
 
@@ -75,7 +75,7 @@ export default function HowItWorks() {
             <div key={step.num} className="px-5 relative z-10">
               <div className="flex items-center gap-3 mb-5">
                 <div
-                  className={`w-11 h-11 rounded-full flex items-center justify-center text-[15px] font-medium flex-shrink-0 ${
+                  className={`w-11 h-11 rounded-full flex items-center justify-center text-[15px] font-medium shrink-0 ${
                     step.gold ? 'bg-[#E8C98A] text-[#7A5A1A]' : 'bg-[#4A5FA8] text-white'
                   }`}
                 >
@@ -115,7 +115,7 @@ export default function HowItWorks() {
                     className="flex items-center gap-2 text-[11px] text-neutral-500 bg-neutral-50 border border-neutral-100 rounded-lg px-3 py-2"
                   >
                     <i
-                      className={`${d.icon} text-[13px] flex-shrink-0 ${
+                      className={`${d.icon} text-[13px] shrink-0 ${
                         step.gold ? 'text-[#C9A55A]' : 'text-[#4A5FA8]'
                       }`}
                       aria-hidden="true"

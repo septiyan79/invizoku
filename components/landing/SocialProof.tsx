@@ -57,7 +57,7 @@ const localTags = [
 
 export default function SocialProof() {
   return (
-    <section className="px-8 py-20 bg-white border-t border-neutral-100">
+    <section className="px-4 md:px-8 py-12 md:py-20 bg-white border-t border-neutral-100">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase text-[#C9A55A] bg-[#FDF4E8] border border-[#E8C98A] px-3 py-1 rounded-full mb-4">
@@ -73,7 +73,7 @@ export default function SocialProof() {
           </p>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
           {stats.map((stat) => (
             <div key={stat.value} className="bg-neutral-50 rounded-xl p-6 text-center">
               <i
@@ -90,7 +90,7 @@ export default function SocialProof() {
 
         <div className="border-t border-neutral-100 mb-12" />
 
-        <div className="grid grid-cols-3 gap-3 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-12">
           {whys.map((why) => (
             <div
               key={why.title}

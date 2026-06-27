@@ -121,7 +121,7 @@ export default function KatalogPage() {
     <div className="min-h-screen bg-[#FDF8F2]">
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
         <div className="mb-10">
           <h1 className="text-[28px] font-medium text-neutral-900 tracking-tight mb-2">
             Katalog tema undangan
@@ -184,7 +184,7 @@ export default function KatalogPage() {
             <p className="text-[12px] text-neutral-400 mb-5">
               Menampilkan {filtered.length} tema
             </p>
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.map((theme) => (
                 <div
                   key={theme.name}

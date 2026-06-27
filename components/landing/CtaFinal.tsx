@@ -9,7 +9,7 @@ const trustNotes = [
 
 export default function CtaFinal() {
   return (
-    <section className="px-8 py-20 bg-neutral-50 border-t border-neutral-200 text-center">
+    <section className="px-4 md:px-8 py-12 md:py-20 bg-neutral-50 border-t border-neutral-200 text-center">
       <div className="max-w-xl mx-auto">
         <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase text-[#C9A55A] bg-[#FDF4E8] border border-[#E8C98A] px-3 py-1 rounded-full mb-5">
           <i className="ti ti-heart text-sm" aria-hidden="true" />

@@ -56,8 +56,8 @@ const avatars = [
 
 export default function Hero() {
   return (
-    <section className="px-8 pt-14 pb-0">
-      <div className="grid grid-cols-2 gap-9 items-start max-w-6xl mx-auto">
+    <section className="px-4 md:px-8 pt-10 md:pt-14 pb-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-9 items-start max-w-6xl mx-auto">
         {/* Kiri */}
         <div>
           <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase text-[#C9A55A] bg-[#FDF4E8] border border-[#E8C98A] px-3 py-1 rounded-full mb-4">
@@ -95,7 +95,7 @@ export default function Hero() {
           <ul className="flex flex-col gap-2">
             {checklist.map((item) => (
               <li key={item} className="flex items-center gap-2 text-[12px] text-neutral-500">
-                <i className="ti ti-check text-[#4A5FA8] text-sm flex-shrink-0" aria-hidden="true" />
+                <i className="ti ti-check text-[#4A5FA8] text-sm shrink-0" aria-hidden="true" />
                 {item}
               </li>
             ))}
@@ -140,7 +140,7 @@ export default function Hero() {
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-6xl mx-auto mt-10 border-t border-neutral-200 pt-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto mt-10 border-t border-neutral-200 pt-4 flex flex-wrap gap-4 items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex">
             {avatars.map((av, i) => (

@@ -29,9 +29,9 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="px-8 pt-12 pb-8 border-t border-neutral-200 bg-[#FDF8F2]">
+    <footer className="px-4 md:px-8 pt-12 pb-8 border-t border-neutral-200 bg-[#FDF8F2]">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div>
             <Link
               href="/"
@@ -40,7 +40,7 @@ export default function Footer() {
               invi<span className="text-[#4A5FA8]">zo</span>ku
               <span className="text-[#C9A55A]">.</span>
             </Link>
-            <p className="text-[12px] text-neutral-500 leading-relaxed mb-4 max-w-[200px]">
+            <p className="text-[12px] text-neutral-500 leading-relaxed mb-4 max-w-50">
               Platform undangan digital Indonesia — dari elegan klasik hingga anime eksklusif,
               semua ada di sini.
             </p>
