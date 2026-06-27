@@ -80,11 +80,13 @@
 - [x] CTA per paket + trust badges + FAQ
 - [x] Mobile: horizontal scroll cards
 
-### 2.4 SEO & File Pendukung
-- [ ] `app/sitemap.ts` — auto-generate sitemap
-- [ ] `app/robots.ts` — blokir crawl area private
-- [ ] `app/og/route.tsx` — dynamic OG image generator
-- [ ] Favicon dan metadata global
+### 2.4 SEO & File Pendukung ✅
+- [x] `app/sitemap.ts` — auto-generate sitemap (/, /katalog, /harga)
+- [x] `app/robots.ts` — blokir crawl area private
+- [x] `app/og/route.tsx` — dynamic OG image via next/og ImageResponse (param: title, sub)
+- [x] `app/icon.tsx` — favicon dinamis via ImageResponse
+- [x] Metadata global di `app/layout.tsx` (metadataBase, openGraph, twitter card)
+- [x] Metadata per halaman: landing (sudah ada), katalog (layout.tsx baru), harga (+ openGraph)
 
 ---
 
