@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { InvitationContent } from '@/types/invitation'
+import type { InvitationData } from '@/types/invitation'
 
 interface SaveState {
   saving: boolean
@@ -16,7 +16,7 @@ export function useInvitation(orderId: string) {
     error: null,
   })
 
-  async function save(content: Partial<InvitationContent>) {
+  async function save(content: Partial<InvitationData>) {
     setState((s) => ({ ...s, saving: true, error: null }))
     try {
       const res = await fetch(`/api/undangan/${orderId}`, {
