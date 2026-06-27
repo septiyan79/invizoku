@@ -6,8 +6,8 @@
 
 ## STATUS PROYEK
 
-**Fase saat ini:** Fase 1 — Setup & Fondasi
-**Terakhir diupdate:** 2026-06-24 (sesi 2)
+**Fase saat ini:** Fase 3 — Sistem Tema Undangan
+**Terakhir diupdate:** 2026-06-27 (sesi 4)
 **Developer:** Solo developer
 
 ---
@@ -52,31 +52,33 @@
 
 ---
 
-## FASE 2 — WEBSITE PUBLIK (MARKETING)
+## FASE 2 — WEBSITE PUBLIK (MARKETING) ✅
 
-### 2.1 Landing Page (`/`)
-- [ ] Layout dan navigation publik
-- [ ] Hero section dengan CTA
-- [ ] Section fitur unggulan
-- [ ] Section paket & harga (ringkasan)
-- [ ] Section testimoni (placeholder dulu)
-- [ ] Section FAQ
-- [ ] Footer
-- [ ] Meta tags & structured data (WebSite schema)
+### 2.1 Landing Page (`/`) ✅
+- [x] Layout dan navigation publik (Navbar sticky + scroll border)
+- [x] Hero section dengan CTA
+- [x] Section cara kerja (HowItWorks)
+- [x] Section showcase tema (ThemeShowcase)
+- [x] Section paket & harga (Pricing — 4 paket dengan fitur & FAQ)
+- [x] Section kenapa Invizoku (SocialProof — stats + why cards + local tags)
+- [x] CTA final + Footer
+- [x] Mobile responsive semua komponen
+- [x] Navbar hamburger menu untuk mobile
+- [x] Pricing cards horizontal scroll + snap di mobile
 
-### 2.2 Katalog Tema (`/katalog`)
-- [ ] Halaman daftar semua tema
-- [ ] Filter per kategori (wedding, ulang tahun, aqiqah, dll)
-- [ ] Filter per tipe (standar, eksklusif)
-- [ ] Card tema dengan preview image
-- [ ] Tombol "Lihat Preview" dan "Pilih Tema"
-- [ ] Meta tags per kategori
+### 2.2 Katalog Tema (`/katalog`) ✅
+- [x] Halaman daftar semua tema dengan grid
+- [x] Filter per kategori acara (wedding, ulang tahun, aqiqah)
+- [x] Filter per gaya (elegan, minimalis, islami, anime, eksklusif, dll)
+- [x] Card tema dengan preview visual (gradient placeholder)
+- [x] Tombol "Pilih tema" → /register
+- [x] Filter: custom dropdown bertemakan brand di mobile, pill buttons di desktop
 
-### 2.3 Halaman Harga (`/harga`)
-- [ ] Tabel perbandingan 4 paket (Trial, Basic, Pro, Studio)
-- [ ] Highlight paket "Paling Laku" (Pro)
-- [ ] CTA per paket
-- [ ] Structured data (Offer + FAQ schema)
+### 2.3 Halaman Harga (`/harga`) ✅
+- [x] Tabel perbandingan 4 paket (Trial, Basic, Pro, Studio)
+- [x] Highlight paket "Paling banyak dipilih" (Pro)
+- [x] CTA per paket + trust badges + FAQ
+- [x] Mobile: horizontal scroll cards
 
 ### 2.4 SEO & File Pendukung
 - [ ] `app/sitemap.ts` — auto-generate sitemap
@@ -283,6 +285,11 @@
 2026-06-24 - dotenv-cli diinstall untuk load .env.local ke semua perintah prisma CLI (Prisma 7 juga hapus --env-file flag).
 2026-06-24 - Fase 1.3: NextAuth split config (auth.config.ts untuk Edge middleware, auth.ts untuk Node.js dengan Prisma). Token reset password menggunakan 8 char terakhir bcrypt hash sebagai invalidation marker — tidak butuh tabel DB terpisah.
 2026-06-24 - Folder path dengan [brackets] di PowerShell perlu .NET IO method: [System.IO.File]::WriteAllText(). PS treats [] as regex wildcard.
+2026-06-25 - Next.js 16.2.9 wajib Turbopack → laptop hang RAM. Solusi: downgrade ke Next.js 15.5.19 (webpack default, --no-turbopack tidak diperlukan).
+2026-06-25 - Next.js 16 deprecated middleware.ts, gunakan proxy.ts. Setelah downgrade ke v15, kembali ke middleware.ts biasa.
+2026-06-25 - Resend: sender domain invizoku.com belum diverifikasi. Gunakan onboarding@resend.dev saat development. Ganti setelah domain dibeli.
+2026-06-27 - Tailwind CSS v4: class arbitrary value seperti max-w-[200px] ditulis max-w-50, flex-shrink-0 → shrink-0, pl-[15px] → pl-3.75.
+2026-06-27 - Tabler Icons: pakai CSS webfont approach (@tabler/icons-webfont), bukan React components. Import di app/layout.tsx, render via <i className="ti ti-*">.
 ```
 
 ---
