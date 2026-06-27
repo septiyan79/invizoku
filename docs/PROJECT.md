@@ -425,6 +425,32 @@ const DATA = {
 }
 ```
 
+**Staging folder — tempat terkumpulnya semua deliverable dari developer:**
+
+Semua tema yang datang dari developer dikumpulkan terlebih dahulu di folder `TEMA-HTML/` di root project, sebelum dikonversi satu per satu ke TSX. Struktur staging folder:
+```
+TEMA-HTML/
+├── WeddingElegant/        ← tema wedding elegan
+│   ├── index.html
+│   ├── style.css
+│   ├── script.js
+│   ├── preview.jpg
+│   └── assets/
+├── WeddingMinimalist/
+├── BirthdayFun/
+└── AqiqahSakura/
+```
+
+Folder ini TIDAK di-deploy — hanya sebagai tempat kerja konversi. Setelah tema selesai dikonversi ke TSX dan masuk ke `components/themes/`, file HTML-nya bisa diarsipkan atau dihapus dari `TEMA-HTML/`.
+
+**Referensi konversi — `WeddingElegant` sebagai contoh:**
+
+`components/themes/WeddingElegant/` adalah hasil konversi pertama yang dibuat sebagai **referensi implementasi**. Saat mengkonversi tema HTML baru ke TSX, jadikan WeddingElegant sebagai patokan:
+- Cara import dan gunakan semua `ThemeContent` components
+- Pola optional chaining ke `InvitationData` (`content.bride?.name`)
+- Cara render `Watermark` untuk paket trial
+- Cara handle show/hide section berdasarkan kondisi data
+
 **Yang disiapkan dulu (sebelum HTML datang):**
 - `InvitationData` TypeScript interface — mencerminkan struktur object DATA dari developer
 - Semua `ThemeContent` components (Countdown, Gallery, RSVP, GuestBook, Maps, MusicPlayer, Angpao, Watermark)
@@ -432,7 +458,7 @@ const DATA = {
 - `ThemeProps` interface
 
 **Yang TIDAK dikerjakan sampai HTML datang:**
-- ThemeShell untuk tema baru — menunggu file dari developer eksternal
+- ThemeShell untuk tema baru — menunggu file dari developer eksternal di `TEMA-HTML/`
 
 **Untuk konversi HTML → TSX:** gunakan prompt di file `docs/PROMPT-konversi-template.md`.
 
