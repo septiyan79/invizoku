@@ -90,47 +90,46 @@
 
 ## FASE 3 — SISTEM TEMA UNDANGAN
 
-### 3.1 Infrastruktur Tema
-- [ ] Buat `components/themes/index.ts` — registry tema
-- [ ] Definisi TypeScript interface `ThemeProps`
-- [ ] Buat `components/theme-content/` — komponen reusable:
-  - [ ] `Countdown.tsx`
-  - [ ] `Gallery.tsx`
-  - [ ] `RSVP.tsx`
-  - [ ] `GuestBook.tsx`
-  - [ ] `Maps.tsx`
-  - [ ] `MusicPlayer.tsx`
-  - [ ] `Angpao.tsx`
-- [ ] Custom hooks:
-  - [ ] `useCountdown.ts`
-  - [ ] `useInvitation.ts`
-  - [ ] `useUpload.ts`
-  - [ ] `useGuests.ts`
-  - [ ] `useAssist.ts`
+### 3.1 Infrastruktur Tema ✅
+- [x] `types/invitation.ts` — ThemeProps, WeddingContent, BirthdayContent, AqiqahContent (sinkron dengan DATA CONTOH/data-contoh.js)
+- [x] `components/themes/index.ts` — registry tema dengan dynamic import
+- [x] `lib/music.ts` — config daftar musik (MusicTrack, musicLibrary, getMusicById)
+- [x] `hooks/useCountdown.ts` — countdown ke target date
+- [x] `hooks/useInvitation.ts` — save content ke /api/undangan/[orderId]
+- [x] `components/theme-content/Countdown.tsx`
+- [x] `components/theme-content/Gallery.tsx` — grid + lightbox
+- [x] `components/theme-content/Maps.tsx` — Google Maps iframe
+- [x] `components/theme-content/MusicPlayer.tsx` — floating button play/pause
+- [x] `components/theme-content/Angpao.tsx` — rekening, QRIS, alamat kado
+- [x] `components/theme-content/RSVP.tsx` — form hadir/tidak, submit ke /api/rsvp
+- [x] `components/theme-content/GuestBook.tsx` — kirim & tampilkan ucapan
+- [ ] `hooks/useUpload.ts` — upload foto ke Cloudinary (dibutuhkan saat editor)
+- [ ] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
+- [ ] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
 
 ### 3.2 Library Musik
-- [ ] Siapkan 10–20 file audio bebas royalti
-- [ ] Simpan sebagai static asset di `public/music/`
-- [ ] Buat config daftar musik (id, judul, artis, url)
+- [x] `lib/music.ts` — config 8 track (id, judul, artis, url)
+- [ ] Siapkan file audio `.mp3` bebas royalti di `public/music/` (manual — tidak bisa di-generate otomatis)
 
-### 3.3 Tema Wedding Standar (prioritas pertama)
-- [ ] Buat tema `WeddingElegant` — ThemeShell + schema JSONB
-- [ ] Buat tema `WeddingMinimalist`
-- [ ] Test render dengan data dummy
+### 3.3 Tema Wedding Standar ✅
+- [x] `WeddingElegant` — ThemeShell lengkap (cover, countdown, akad, resepsi, galeri, love story, youtube, RSVP, angpao, buku tamu, footer)
+- [x] `WeddingElegant/schema.ts` — default content sesuai DATA_WEDDING dari data-contoh.js
+- [ ] `WeddingMinimalist` — belum dibuat
+- [ ] `WeddingRustic` — belum dibuat
 
 ### 3.4 Tema Lainnya
-- [ ] Tema ulang tahun standar
-- [ ] Tema aqiqah/khitan standar
-- [ ] Tema wedding eksklusif (anime/kartun) — Pro & Studio
-- [ ] Tambah tema sesuai kebutuhan
+- [ ] `BirthdayFun` — tema ulang tahun standar
+- [ ] `AqiqahSakura` — tema aqiqah/khitan
+- [ ] `WeddingAnime` — tema eksklusif Pro & Studio
 
-### 3.5 Halaman Output Undangan (`/undangan/[slug]`)
-- [ ] ISR setup dengan `revalidatePath`
-- [ ] Deteksi mode akses: generik / simpel (?nama=) / lengkap (?token=)
-- [ ] Render ThemeShell + ThemeContent dinamis berdasarkan `component_key`
-- [ ] Watermark untuk paket trial
-- [ ] Halaman 404 untuk undangan expired atau tidak ditemukan
-- [ ] OG meta tags untuk preview WhatsApp
+### 3.5 Halaman Output Undangan (`/undangan/[slug]`) ✅
+- [x] ISR dengan `export const revalidate = 3600`
+- [x] Dynamic import tema via registry + `next/dynamic`
+- [x] Deteksi guest name dari `?nama=` param (client-side di ThemeShell)
+- [x] Deteksi guest token dari `?token=` param (client-side di ThemeShell)
+- [x] Watermark untuk paket trial (di ThemeShell)
+- [x] 404 jika order tidak ada, expired, atau belum punya invitation
+- [x] `noindex` robots meta — data pribadi tidak diindeks Google
 
 ---
 
