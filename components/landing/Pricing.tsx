@@ -161,11 +161,12 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        {/* Mobile: horizontal scroll. Desktop: grid */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-3 -mx-4 px-4 mb-5 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:overflow-x-visible md:snap-none md:pb-0 md:mb-8 lg:grid-cols-4">
           {packages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`rounded-xl p-5 flex flex-col border bg-white ${
+              className={`snap-start shrink-0 w-[82vw] sm:w-72 md:w-auto rounded-xl p-5 flex flex-col border bg-white ${
                 pkg.featured
                   ? 'border-[#4A5FA8] border-2'
                   : pkg.studio

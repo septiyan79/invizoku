@@ -29,10 +29,41 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="px-4 md:px-8 pt-12 pb-8 border-t border-neutral-200 bg-[#FDF8F2]">
+    <footer className="px-4 md:px-8 pt-10 md:pt-12 pb-6 md:pb-8 border-t border-neutral-200 bg-[#FDF8F2]">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-          <div>
+        {/* Brand row — full width on mobile */}
+        <div className="flex items-center justify-between mb-5 md:hidden">
+          <Link
+            href="/"
+            className="text-[17px] font-medium text-neutral-900 tracking-tight"
+          >
+            invi<span className="text-[#4A5FA8]">zo</span>ku
+            <span className="text-[#C9A55A]">.</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg border border-neutral-200 flex items-center justify-center text-neutral-400 hover:border-[#4A5FA8] hover:text-[#4A5FA8] transition-colors"
+              >
+                <i className={`${s.icon} text-sm`} aria-hidden="true" />
+              </a>
+            ))}
+            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-[#FDF4E8] border border-[#E8C98A] text-[#7A5A1A]">
+              <i className="ti ti-map-pin text-[10px]" aria-hidden="true" />
+              Indonesia
+            </span>
+          </div>
+        </div>
+
+        {/* Link columns — 3 cols on mobile, 4 cols on desktop */}
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-8 mb-8">
+          {/* Brand column — desktop only */}
+          <div className="hidden md:block">
             <Link
               href="/"
               className="text-[18px] font-medium text-neutral-900 tracking-tight block mb-3"
@@ -66,15 +97,15 @@ export default function Footer() {
 
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-neutral-400 mb-4">
+              <p className="text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-neutral-400 mb-3 md:mb-4">
                 {title}
               </p>
-              <ul className="flex flex-col gap-2.5">
+              <ul className="flex flex-col gap-2">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[13px] text-neutral-500 hover:text-[#4A5FA8] transition-colors"
+                      className="text-[12px] md:text-[13px] text-neutral-500 hover:text-[#4A5FA8] transition-colors leading-snug"
                     >
                       {link.label}
                     </Link>
@@ -85,17 +116,17 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-neutral-200 pt-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="border-t border-neutral-200 pt-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <p className="text-[12px] text-neutral-400">
             © {new Date().getFullYear()} Invizoku. Dibuat dengan{' '}
             <span className="text-[#C9A55A]">♥</span> di Indonesia.
           </p>
-          <div className="flex gap-5">
+          <div className="flex gap-4 flex-wrap">
             {['Syarat & ketentuan', 'Kebijakan privasi', 'Kebijakan refund'].map((label) => (
               <Link
                 key={label}
                 href={`/${label.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
-                className="text-[12px] text-neutral-400 hover:text-neutral-600 transition-colors"
+                className="text-[11px] text-neutral-400 hover:text-neutral-600 transition-colors"
               >
                 {label}
               </Link>
