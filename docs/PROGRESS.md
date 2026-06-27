@@ -138,27 +138,36 @@
 
 ---
 
-## FASE 4 — CHECKOUT & PEMBAYARAN
+## FASE 4 — CHECKOUT & PEMBAYARAN ✅
 
-### 4.1 Alur Checkout
-- [ ] Halaman `checkout/[temaId]` — pilih paket + isi data pemesan
-- [ ] Redirect ke login jika belum auth (simpan `callbackUrl`)
-- [ ] Generate Midtrans payment token via `/api/checkout`
-- [ ] Halaman `checkout/payment` — render Midtrans payment UI
-- [ ] Halaman `checkout/success` — konfirmasi berhasil
+### 4.1 Alur Checkout ✅
+- [x] Halaman `checkout/[temaId]` — server component, fetch tema dari DB, cek trial eligibility
+- [x] `checkout/[temaId]/CheckoutForm.tsx` — client component, pilih paket + slug + submit
+- [x] Redirect ke login jika belum auth — via middleware (`auth.config.ts`)
+- [x] `app/api/checkout/route.ts` — validasi, buat order pending, generate Midtrans snap token
+- [x] Halaman `checkout/payment` — server → `PaymentClient.tsx` load snap.js, handle callbacks
+- [x] Halaman `checkout/success` — konfirmasi berhasil, info next steps
 
-### 4.2 Webhook Midtrans (`/api/webhook/midtrans`)
-- [ ] Verifikasi signature SHA-512 (WAJIB, lihat PROJECT.md bagian 10)
-- [ ] Handle `payment_type = "new_order"` — aktifkan order baru
-- [ ] Handle `payment_type = "renewal"` — perpanjang masa aktif
-- [ ] Handle `payment_type = "upgrade"` — upgrade paket
-- [ ] Kirim notifikasi WA ke user via Fonnte setelah pembayaran berhasil
+### 4.2 Webhook Midtrans (`/api/webhook/midtrans`) ✅
+- [x] Verifikasi signature SHA-512 (WAJIB)
+- [x] Handle `payment_type = "new_order"` — aktifkan order, buat invitation default, WA notif
+- [x] Handle `payment_type = "renewal"` — perpanjang expires_at dari nilai lama
+- [x] Handle `payment_type = "upgrade"` — update package + expires_at baru
+- [x] WA notif via Fonnte — skip gracefully jika FONNTE_API_KEY belum diisi
 
-### 4.3 Paket Uji Coba (Trial)
-- [ ] Cek apakah user pernah beli paket berbayar sebelumnya
-- [ ] Jika belum pernah: aktifkan trial otomatis setelah register
-- [ ] Buat order trial tanpa payment
-- [ ] Batasi fitur sesuai ketentuan paket trial
+### 4.3 Paket Uji Coba (Trial) ✅
+- [x] Cek eligibility di `/api/checkout` — query riwayat paid orders user
+- [x] Trial aktif langsung tanpa payment, invitation default dibuat seketika
+- [x] Fitur dibatasi di ThemeShell berdasarkan `pkg === 'trial'`
+
+### 4.4 Lib & Config ✅
+- [x] `lib/packages.ts` — config harga, durasi, dan getExpiresAt()
+- [x] `lib/midtrans.ts` — createSnapToken(), verifyWebhookSignature()
+- [x] `lib/defaultContent.ts` — getDefaultContent() per component_key
+
+### 4.5 Katalog — koneksi ke DB ✅
+- [x] `katalog/page.tsx` — dikonversi ke server component, fetch themes dari Prisma
+- [x] `katalog/KatalogGrid.tsx` — client component (filter state), tombol "Pilih tema" → /checkout/[id]
 
 ---
 
