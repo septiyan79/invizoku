@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import '@tabler/icons-webfont/dist/tabler-icons.min.css'
 
 export const metadata: Metadata = {
   title: {
