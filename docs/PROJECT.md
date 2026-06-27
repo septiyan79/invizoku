@@ -242,8 +242,9 @@ Field `content` di tabel `invitations` berisi JSONB yang strukturnya berbeda per
   "groom": { "name": "", "parents": "" },
   "akad": { "date": "", "time": "", "venue": "", "address": "", "maps_url": "" },
   "resepsi": { "date": "", "time": "", "venue": "", "address": "", "maps_url": "" },
-  "gallery": ["cloudinary_url_1", "cloudinary_url_2"],
+  "countdown_target": "2026-02-14T08:00:00",
   "cover_photo": "cloudinary_url",
+  "gallery": ["cloudinary_url_1", "cloudinary_url_2"],
   "love_story": [{ "photo": "", "caption": "", "date": "" }],
   "music_id": "music_001",
   "youtube_url": "",
@@ -257,8 +258,10 @@ Field `content` di tabel `invitations` berisi JSONB yang strukturnya berbeda per
   "name": "",
   "age": 0,
   "event": { "date": "", "time": "", "venue": "", "address": "", "maps_url": "" },
-  "gallery": [],
+  "countdown_target": "2026-03-20T18:00:00",
   "cover_photo": "",
+  "gallery": [],
+  "love_story": [],
   "music_id": "music_001",
   "youtube_url": "",
   "angpao": { "rekening": [], "qris_url": "", "address": "" }
@@ -269,11 +272,16 @@ Field `content` di tabel `invitations` berisi JSONB yang strukturnya berbeda per
 ```json
 {
   "child_name": "",
+  "child_gender": "laki-laki",
+  "event_type": "aqiqah",
   "parents": "",
   "event": { "date": "", "time": "", "venue": "", "address": "", "maps_url": "" },
-  "gallery": [],
+  "countdown_target": "2026-04-05T10:00:00",
   "cover_photo": "",
+  "gallery": [],
+  "love_story": [],
   "music_id": "music_001",
+  "youtube_url": "",
   "angpao": { "rekening": [], "qris_url": "", "address": "" }
 }
 ```
@@ -297,8 +305,8 @@ components/
 ├── themes/
 │   ├── index.ts                  # Registry: map component_key → React component
 │   ├── WeddingElegant/
-│   │   ├── index.tsx             # ThemeShell
-│   │   └── schema.ts             # Definisi field JSONB untuk tema ini
+│   │   ├── index.tsx             # ThemeShell (hasil konversi dari HTML developer)
+│   │   └── schema.ts             # Default content JSONB untuk tema ini
 │   ├── WeddingMinimalist/
 │   ├── WeddingAnime/
 │   └── BirthdayFun/
@@ -309,7 +317,8 @@ components/
     ├── GuestBook.tsx
     ├── Maps.tsx
     ├── MusicPlayer.tsx
-    └── Angpao.tsx
+    ├── Angpao.tsx
+    └── Watermark.tsx             # Tampil jika pkg === 'trial'
 ```
 
 ### Dynamic import tema (lazy loading)
@@ -321,8 +330,48 @@ const themeRegistry: Record<string, () => Promise<{ default: React.ComponentType
   BirthdayFun:       () => import('./BirthdayFun'),
 }
 
-export function getThemeComponent(componentKey: string) {
+export function getThemeLoader(componentKey: string) {
   return themeRegistry[componentKey] ?? null
+}
+```
+
+### Interface InvitationData
+```typescript
+// types/invitation.ts
+// Satu interface unified — semua field optional kecuali field common
+// ThemeShell masing-masing menggunakan field yang relevan untuk kategorinya
+export interface InvitationData {
+  // Wedding
+  bride?: { name: string; parents: string }
+  groom?: { name: string; parents: string }
+  akad?: { date: string; time: string; venue: string; address: string; maps_url: string }
+  resepsi?: { date: string; time: string; venue: string; address: string; maps_url: string }
+
+  // Birthday
+  name?: string
+  age?: number
+
+  // Aqiqah / Khitan
+  child_name?: string
+  child_gender?: 'laki-laki' | 'perempuan'
+  event_type?: 'aqiqah' | 'khitan'
+  parents?: string
+
+  // Birthday, Aqiqah, Khitan
+  event?: { date: string; time: string; venue: string; address: string; maps_url: string }
+
+  // Common — semua kategori
+  countdown_target: string
+  cover_photo: string
+  gallery: string[]
+  love_story: { photo: string; caption: string; date: string }[]
+  music_id: string
+  youtube_url: string
+  angpao: {
+    rekening: { bank: string; no: string; name: string }[]
+    qris_url: string
+    address: string
+  }
 }
 ```
 
@@ -335,6 +384,65 @@ hooks/
 ├── useGuests.ts        # Kelola daftar tamu & RSVP
 └── useAssist.ts        # Kelola status terima beres
 ```
+
+### Workflow template dari developer eksternal
+
+Template undangan TIDAK dibuat langsung di dalam project. Pembuatan visual tema didelegasikan ke developer eksternal yang mengerjakan dalam format HTML/CSS/JS biasa — bukan TSX.
+
+**Format deliverable dari developer:**
+```
+nama-tema/
+├── index.html    ← struktur visual
+├── style.css     ← semua styling
+├── script.js     ← animasi, countdown, interaksi
+├── preview.jpg   ← screenshot untuk katalog
+└── assets/
+    ├── cover.jpg
+    ├── foto-1.jpg
+    └── musik.mp3
+```
+
+Di dalam `script.js`, semua data undangan terpusat dalam satu object `DATA`:
+```javascript
+const DATA = {
+  guest_name: "...",          // runtime — dari URL/token, TIDAK disimpan di DB
+  bride: { name: "...", parents: "..." },
+  groom: { name: "...", parents: "..." },
+  akad: { date: "...", time: "...", venue: "...", address: "...", maps_url: "..." },
+  resepsi: { date: "...", time: "...", venue: "...", address: "...", maps_url: "..." },
+  countdown_target: "2026-02-14T08:00:00",
+  cover_photo: "assets/cover.jpg",
+  gallery: ["assets/foto-1.jpg", "assets/foto-2.jpg"],
+  love_story: [{ photo: "...", caption: "...", date: "..." }],
+  music: "assets/musik.mp3",  // di DB disimpan sebagai music_id referensi lib/music.ts
+  youtube_url: "",
+  angpao: {
+    rekening: [{ bank: "...", no: "...", name: "..." }],
+    qris_url: "assets/qris.jpg",
+    address: "..."
+  },
+  show_watermark: false        // di ThemeShell: pkg === 'trial'
+}
+```
+
+**Yang disiapkan dulu (sebelum HTML datang):**
+- `InvitationData` TypeScript interface — mencerminkan struktur object DATA dari developer
+- Semua `ThemeContent` components (Countdown, Gallery, RSVP, GuestBook, Maps, MusicPlayer, Angpao, Watermark)
+- Registry di `components/themes/index.ts`
+- `ThemeProps` interface
+
+**Yang TIDAK dikerjakan sampai HTML datang:**
+- ThemeShell untuk tema baru — menunggu file dari developer eksternal
+
+**Untuk konversi HTML → TSX:** gunakan prompt di file `docs/PROMPT-konversi-template.md`.
+
+**Kondisi show/hide yang dihandle di ThemeShell (bukan di database):**
+- `love_story` — sembunyikan section jika array kosong atau null
+- `youtube_url` — sembunyikan section jika string kosong
+- `angpao.rekening` — sembunyikan jika array kosong
+- `angpao.qris_url` — sembunyikan jika string kosong
+- `angpao.address` — sembunyikan jika string kosong
+- Watermark — tampilkan jika `pkg === 'trial'`
 
 ---
 
@@ -730,7 +838,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 7. **Paket trial** — hanya bisa didapat sekali, cek `orders` history sebelum beri akses trial
 8. **QR Code check-in** — fitur ini ditunda pasca-launch, jangan implementasi dulu. Field `checked_in_at` di tabel `guests` akan ditambahkan nanti via migrasi
 9. **Harga upgrade antar paket** — belum final, buat config tersendiri yang mudah diubah tanpa deploy ulang
-10. **Musik latar** — library bawaan, file audio disimpan sebagai static asset, bukan di Cloudinary
+10. **Musik latar** — library bawaan, file audio disimpan sebagai static asset (`public/music/`), bukan di Cloudinary. Di DB disimpan sebagai `music_id` yang mereferensi `lib/music.ts`
+11. **Template undangan** — visual tema datang dari developer eksternal dalam format HTML/CSS/JS. Jangan buat ThemeShell baru sampai file HTML diterima. Yang disiapkan lebih dulu: `InvitationData` interface, semua `ThemeContent` components, registry, dan `Watermark` component
 
 ---
 
@@ -789,8 +898,28 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ### Urutan implementasi section landing page
 1. Hero section — sudah dirancang, kerjakan pertama
 2. Cara kerja — 3 langkah: pilih tema, isi data, sebar
-3. Showcase tema — galeri dengan filter kategori
-4. Paket & harga — tabel 4 paket (Trial, Basic, Pro, Studio)
-5. Testimoni — ulasan pasangan
-6. CTA final
-7. Footer
+3. Showcase tema — galeri dengan filter kategori (filter satu baris di landing, dua layer di /katalog)
+4. Paket & harga — tabel 4 paket (Trial, Basic, Pro, Studio) + mini FAQ 4 pertanyaan
+5. Social proof — pengganti testimoni (belum ada testimoni saat launch): stat card + why card + "Dibuat di Indonesia"
+6. CTA final — background secondary, headline + 2 CTA + 4 trust note
+7. Footer — 4 kolom: brand+sosmed, Produk, Tema, Bantuan
+
+### Detail section yang sudah dirancang (semua section selesai)
+
+**Cara kerja:** 3 step dengan garis putus-putus connector. Step 2 (Bayar & isi data) di-highlight gold sebagai focal point. Mini card 3 poin di bawah setiap step.
+
+**Showcase tema:** Filter satu baris (Semua, Wedding, Ulang tahun, Aqiqah, Eksklusif-gold). Grid 3 kolom 6 tema. Card tema: preview berwarna, badge (Terpopuler/Baru/Eksklusif), nama, kategori, harga mulai, tombol Preview. Tema eksklusif border gold. CTA "Lihat semua tema" → /katalog.
+
+**Katalog (/katalog) — filter dua layer:**
+- Layer 1 sidebar: kategori acara (wedding, tunangan, birthday, aqiqah, khitan, tasyakuran, wisuda)
+- Layer 2 sidebar: gaya tema (elegan, minimalis, tradisional-adat, anime-kartun, floral, islami, olahraga, modern)
+- Filter bisa dikombinasikan — misal Wedding + Anime menampilkan hanya tema wedding bergaya anime
+- Active filter ditampilkan sebagai badge di atas grid hasil
+
+**Paket & harga:** 4 kolom card. Pro featured (border brand 2px). Studio border gold, centang gold. Copywriting formal/profesional. Trust badge 4 item. Mini FAQ 2 kolom 4 pertanyaan.
+
+**Social proof:** 4 stat card (50+ tema, 7 kategori, <5 mnt aktif, 3x24j SLA). 3 why card (tengah=gold). Box "Dibuat di Indonesia" + 6 tag lokal.
+
+**CTA final:** Background surface-alt. Headline + 2 CTA (brand + gold). 4 trust note.
+
+**Footer:** Logo + deskripsi + sosmed (Instagram, TikTok, WhatsApp) + badge "Dibuat di Indonesia". 3 kolom link. Bottom: copyright + 3 link legal.

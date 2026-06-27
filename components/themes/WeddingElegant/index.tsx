@@ -3,7 +3,6 @@
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import type { ThemeProps } from '@/types/invitation'
-import type { WeddingContent } from '@/types/invitation'
 import Countdown from '@/components/theme-content/Countdown'
 import Gallery from '@/components/theme-content/Gallery'
 import Maps from '@/components/theme-content/Maps'
@@ -11,6 +10,7 @@ import MusicPlayer from '@/components/theme-content/MusicPlayer'
 import Angpao from '@/components/theme-content/Angpao'
 import RSVP from '@/components/theme-content/RSVP'
 import GuestBook from '@/components/theme-content/GuestBook'
+import Watermark from '@/components/theme-content/Watermark'
 
 // Warna tema WeddingElegant
 const C = {
@@ -54,7 +54,7 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
   const searchParams = useSearchParams()
   const guestName = searchParams.get('nama') ?? undefined
 
-  const c = content as WeddingContent
+  const c = content
   const isPaid = pkg !== 'trial'
   const isPro = pkg === 'pro' || pkg === 'studio'
   const showLoveStory = isPro && c.love_story && c.love_story.length > 0
@@ -66,13 +66,7 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
       {isPaid && c.music_id && <MusicPlayer musicId={c.music_id} />}
 
       {/* Watermark — Trial */}
-      {!isPaid && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full shadow-md"
-          style={{ background: C.bgGold, border: `1px solid ${C.goldLight}`, color: C.textMuted }}>
-          <i className="ti ti-award text-[13px]" style={{ color: C.gold }} aria-hidden="true" />
-          Dibuat dengan Invizoku
-        </div>
-      )}
+      {!isPaid && <Watermark />}
 
       {/* ── COVER ── */}
       <section
@@ -110,13 +104,13 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
 
           <div className="mb-2">
             <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: C.textMuted }}>
-              {c.bride.parents}
+              {c.bride?.parents}
             </p>
             <h1
               className="text-[38px] leading-tight font-medium"
               style={{ color: C.text, fontFamily: 'Georgia, serif' }}
             >
-              {c.bride.name}
+              {c.bride?.name}
             </h1>
           </div>
 
@@ -127,10 +121,10 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
               className="text-[38px] leading-tight font-medium"
               style={{ color: C.text, fontFamily: 'Georgia, serif' }}
             >
-              {c.groom.name}
+              {c.groom?.name}
             </h1>
             <p className="text-[11px] uppercase tracking-widest mt-1" style={{ color: C.textMuted }}>
-              {c.groom.parents}
+              {c.groom?.parents}
             </p>
           </div>
 
@@ -139,7 +133,7 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
             style={{ background: C.bgGold, border: `1px solid ${C.border}`, color: C.textMuted }}
           >
             <i className="ti ti-calendar" style={{ color: C.gold }} aria-hidden="true" />
-            {c.akad.date}
+            {c.akad?.date}
           </div>
 
           <div className="mt-12">
@@ -163,17 +157,17 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
       <section id="section-akad" className="px-6 py-16 max-w-lg mx-auto">
         <SectionTitle sub="Akad Nikah">Ijab Qabul</SectionTitle>
         <div className="text-center space-y-1 mb-6">
-          <p className="font-medium" style={{ fontFamily: 'Georgia, serif' }}>{c.akad.venue}</p>
-          <p className="text-[13px]" style={{ color: C.textMuted }}>{c.akad.address}</p>
+          <p className="font-medium" style={{ fontFamily: 'Georgia, serif' }}>{c.akad?.venue}</p>
+          <p className="text-[13px]" style={{ color: C.textMuted }}>{c.akad?.address}</p>
           <p
             className="inline-flex items-center gap-1.5 text-[12px] mt-2 px-3 py-1 rounded-full"
             style={{ background: C.bgGold, color: C.textMuted }}
           >
             <i className="ti ti-clock text-[12px]" style={{ color: C.gold }} aria-hidden="true" />
-            {c.akad.date} · {c.akad.time}
+            {c.akad?.date} · {c.akad?.time}
           </p>
         </div>
-        {c.akad.maps_url && <Maps mapsUrl={c.akad.maps_url} />}
+        {c.akad?.maps_url && <Maps mapsUrl={c.akad.maps_url} />}
       </section>
 
       <Ornament className="px-10 mb-0" />
@@ -182,17 +176,17 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
       <section className="px-6 py-16 max-w-lg mx-auto">
         <SectionTitle sub="Resepsi">Walimatul Ursy</SectionTitle>
         <div className="text-center space-y-1 mb-6">
-          <p className="font-medium" style={{ fontFamily: 'Georgia, serif' }}>{c.resepsi.venue}</p>
-          <p className="text-[13px]" style={{ color: C.textMuted }}>{c.resepsi.address}</p>
+          <p className="font-medium" style={{ fontFamily: 'Georgia, serif' }}>{c.resepsi?.venue}</p>
+          <p className="text-[13px]" style={{ color: C.textMuted }}>{c.resepsi?.address}</p>
           <p
             className="inline-flex items-center gap-1.5 text-[12px] mt-2 px-3 py-1 rounded-full"
             style={{ background: C.bgGold, color: C.textMuted }}
           >
             <i className="ti ti-clock text-[12px]" style={{ color: C.gold }} aria-hidden="true" />
-            {c.resepsi.date} · {c.resepsi.time}
+            {c.resepsi?.date} · {c.resepsi?.time}
           </p>
         </div>
-        {c.resepsi.maps_url && <Maps mapsUrl={c.resepsi.maps_url} />}
+        {c.resepsi?.maps_url && <Maps mapsUrl={c.resepsi.maps_url} />}
       </section>
 
       {/* ── GALERI ── */}
@@ -301,7 +295,7 @@ export default function WeddingElegant({ content, pkg, slug, orderId }: ThemePro
       >
         <p className="text-[11px] mb-1 uppercase tracking-[0.3em]">With love</p>
         <p className="text-[18px] font-medium mb-4" style={{ fontFamily: 'Georgia, serif', color: C.text }}>
-          {c.bride.name} & {c.groom.name}
+          {c.bride?.name} & {c.groom?.name}
         </p>
         <Ornament className="max-w-37.5 mx-auto mb-4" />
         <p style={{ color: C.textMuted }}>

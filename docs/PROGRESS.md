@@ -91,7 +91,7 @@
 ## FASE 3 — SISTEM TEMA UNDANGAN
 
 ### 3.1 Infrastruktur Tema ✅
-- [x] `types/invitation.ts` — ThemeProps, WeddingContent, BirthdayContent, AqiqahContent (sinkron dengan DATA CONTOH/data-contoh.js)
+- [x] `types/invitation.ts` — InvitationData unified interface (semua field optional kecuali common), ThemeProps (sesuai PROMPT-info-template-workflow.md)
 - [x] `components/themes/index.ts` — registry tema dengan dynamic import
 - [x] `lib/music.ts` — config daftar musik (MusicTrack, musicLibrary, getMusicById)
 - [x] `hooks/useCountdown.ts` — countdown ke target date
@@ -103,6 +103,7 @@
 - [x] `components/theme-content/Angpao.tsx` — rekening, QRIS, alamat kado
 - [x] `components/theme-content/RSVP.tsx` — form hadir/tidak, submit ke /api/rsvp
 - [x] `components/theme-content/GuestBook.tsx` — kirim & tampilkan ucapan
+- [x] `components/theme-content/Watermark.tsx` — standalone, dipakai semua ThemeShell jika pkg === 'trial'
 - [ ] `hooks/useUpload.ts` — upload foto ke Cloudinary (dibutuhkan saat editor)
 - [ ] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
 - [ ] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
@@ -111,11 +112,13 @@
 - [x] `lib/music.ts` — config 8 track (id, judul, artis, url)
 - [ ] Siapkan file audio `.mp3` bebas royalti di `public/music/` (manual — tidak bisa di-generate otomatis)
 
-### 3.3 Tema Wedding Standar ✅
-- [x] `WeddingElegant` — ThemeShell lengkap (cover, countdown, akad, resepsi, galeri, love story, youtube, RSVP, angpao, buku tamu, footer)
-- [x] `WeddingElegant/schema.ts` — default content sesuai DATA_WEDDING dari data-contoh.js
-- [ ] `WeddingMinimalist` — belum dibuat
-- [ ] `WeddingRustic` — belum dibuat
+### 3.3 Tema Wedding Standar
+- [x] `WeddingElegant` — ThemeShell contoh/referensi (dibuat sebelum HTML dari developer tiba, berfungsi sebagai panduan konversi HTML→TSX)
+- [x] `WeddingElegant/schema.ts` — default content InvitationData sesuai DATA_WEDDING dari data-contoh.js
+- [ ] `WeddingMinimalist` — menunggu HTML dari developer eksternal
+- [ ] `WeddingRustic` — menunggu HTML dari developer eksternal
+
+> **Catatan:** Sesuai PROMPT-info-template-workflow.md, ThemeShell baru TIDAK dibuat sampai file HTML dari developer eksternal diterima. WeddingElegant yang ada adalah contoh implementasi yang menunjukkan pola konversi.
 
 ### 3.4 Tema Lainnya
 - [ ] `BirthdayFun` — tema ulang tahun standar
@@ -289,6 +292,7 @@
 2026-06-25 - Resend: sender domain invizoku.com belum diverifikasi. Gunakan onboarding@resend.dev saat development. Ganti setelah domain dibeli.
 2026-06-27 - Tailwind CSS v4: class arbitrary value seperti max-w-[200px] ditulis max-w-50, flex-shrink-0 → shrink-0, pl-[15px] → pl-3.75.
 2026-06-27 - Tabler Icons: pakai CSS webfont approach (@tabler/icons-webfont), bukan React components. Import di app/layout.tsx, render via <i className="ti ti-*">.
+2026-06-27 - Sesuai PROMPT-info-template-workflow.md: InvitationData dibuat sebagai satu unified interface (semua field optional kecuali common fields). WeddingContent/BirthdayContent/AqiqahContent dihapus dan digabung. ThemeShell baru tunggu HTML dari developer eksternal.
 ```
 
 ---

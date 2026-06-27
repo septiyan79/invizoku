@@ -1,8 +1,8 @@
-import type { WeddingContent } from '@/types/invitation'
+import type { InvitationData } from '@/types/invitation'
 
 // Default content sesuai DATA CONTOH/data-contoh.js → DATA_WEDDING
 // Dipakai saat order baru dibuat (Invitation.content awal)
-export const defaultWeddingContent: WeddingContent = {
+export const defaultWeddingContent: InvitationData = {
   bride: {
     name: 'Anisa Putri Rahayu',
     parents: 'Putri dari Bapak Hendra Wijaya & Ibu Sari Indah',

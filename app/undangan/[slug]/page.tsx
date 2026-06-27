@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { getThemeLoader } from '@/components/themes'
-import type { ThemeProps, InvitationContent } from '@/types/invitation'
+import type { ThemeProps, InvitationData } from '@/types/invitation'
 
 // ISR — revalidate setiap jam, atau on-demand via revalidatePath()
 export const revalidate = 3600
@@ -69,7 +69,7 @@ export default async function UndanganPage({ params }: PageProps) {
   }
 
   const props: Omit<ThemeProps, 'guestName' | 'guestToken'> = {
-    content: order.invitation.content as unknown as InvitationContent,
+    content: order.invitation.content as unknown as InvitationData,
     pkg: order.package as ThemeProps['pkg'],
     slug: order.slug,
     orderId: order.id,
