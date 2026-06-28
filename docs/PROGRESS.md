@@ -6,8 +6,8 @@
 
 ## STATUS PROYEK
 
-**Fase saat ini:** Fase 5 — Dashboard User
-**Terakhir diupdate:** 2026-06-28 (sesi 5)
+**Fase saat ini:** Fase 6 — Dashboard Admin
+**Terakhir diupdate:** 2026-06-28 (sesi 6)
 **Developer:** Solo developer
 
 ---
@@ -106,7 +106,7 @@
 - [x] `components/theme-content/RSVP.tsx` — form hadir/tidak, submit ke /api/rsvp
 - [x] `components/theme-content/GuestBook.tsx` — kirim & tampilkan ucapan
 - [x] `components/theme-content/Watermark.tsx` — standalone, dipakai semua ThemeShell jika pkg === 'trial'
-- [ ] `hooks/useUpload.ts` — upload foto ke Cloudinary (dibutuhkan saat editor)
+- [x] `hooks/useUpload.ts` — upload foto ke Cloudinary
 - [x] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
 - [ ] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
 
@@ -200,7 +200,9 @@
 - [x] Sticky save bar: status simpan, tombol Preview (new tab), Simpan, Publish (paid only)
 - [x] Tombol "Dipublikasi" indicator setelah publish
 - [x] Tab navigasi: "Data Acara" ↔ "Foto & Elemen"
-- [x] `/dashboard/edit/[orderId]/elemen` — shell dengan semua section (foto cover, galeri, musik, angpao, love story), gated per paket, upload belum diimplementasi
+- [x] `/dashboard/edit/[orderId]/elemen` — upload foto cover, galeri (multiple), musik, angpao/QRIS, love story; gated per paket; delete foto dari Cloudinary; live preview iframe kanan
+- [x] `components/InvitationPreview.tsx` — reusable preview iframe, dipakai di Data Acara dan Elemen
+- [x] `app/api/upload/route.ts` — POST (upload ke Cloudinary), DELETE (hapus dari Cloudinary)
 
 ### 5.4 Manajemen Tamu (`/dashboard/tamu/[orderId]`) ✅
 - [x] Input daftar tamu (nama) — single name + bulk textarea (mode toggle)
@@ -217,10 +219,10 @@
 - [ ] Tampilkan sisa jatah revisi ("sisa revisi: X dari Y")
 - [ ] Notifikasi saat admin selesai mengerjakan
 
-### 5.6 Profil User
-- [ ] Edit nama, nomor WA (`/profil`)
-- [ ] Ganti password (`/profil/keamanan`)
-- [ ] Toggle notifikasi RSVP & ucapan (`/profil/notifikasi`)
+### 5.6 Profil User ✅
+- [x] Edit nama, nomor WA (`/profil`)
+- [x] Ganti password (`/profil/keamanan`)
+- [x] Toggle notifikasi RSVP & ucapan (`/profil/notifikasi`)
 
 ---
 
@@ -252,18 +254,18 @@
 
 ## FASE 7 — SISTEM EXPIRY & CRON
 
-### 7.1 Vercel Cron Job (jam 02.00 WIB / 19.00 UTC)
-- [ ] Setup Vercel Cron di `vercel.json`
-- [ ] Cek order dengan `expires_at <= now() + 14 hari` → kirim notif H-14
-- [ ] Cek order dengan `expires_at <= now() + 1 hari` → kirim notif H-1
-- [ ] Cek order yang sudah expired → ubah status ke `expired`
-- [ ] Cek tiket terima beres yang sudah 2x24 jam belum selesai → kirim warning ke admin
-- [ ] Cleanup media Cloudinary untuk order yang sudah 30 hari sejak expired (bukan saat expired)
-- [ ] Bebaskan slug order yang medianya sudah dihapus (30 hari setelah expired)
+### 7.1 Vercel Cron Job (jam 02.00 WIB / 19.00 UTC) ✅
+- [x] Setup Vercel Cron di `vercel.json` (schedule: `0 19 * * *`)
+- [x] Cek order dengan `expires_at <= now() + 14 hari` → kirim notif H-14 via Fonnte
+- [x] Cek order dengan `expires_at <= now() + 1 hari` → kirim notif H-1 via Fonnte
+- [x] Cek order yang sudah expired → ubah status ke `expired` + revalidatePath ISR
+- [ ] Cek tiket terima beres yang sudah 2x24 jam belum selesai → kirim warning ke admin (ditunda, butuh `assist_started_at` field — tunggu Fase 5.5)
+- [x] Cleanup media Cloudinary untuk order yang sudah 30 hari sejak expired
+- [x] Bebaskan slug order yang medianya sudah dihapus (set ke `deleted-{id}`)
+- [x] `lib/fonnte.ts` — helper `sendWhatsApp()`, skip gracefully jika API key belum diisi
 
-### 7.2 Halaman 404 Undangan Expired
-- [ ] Cek `status === 'expired'` di `undangan/[slug]/page.tsx`
-- [ ] Return `notFound()` dari Next.js
+### 7.2 Halaman 404 Undangan Expired ✅
+- [x] `undangan/[slug]/page.tsx` sudah cek `status !== 'active'` → `notFound()` (sudah ada sejak Fase 3)
 
 ---
 
