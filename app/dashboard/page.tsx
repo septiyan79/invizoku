@@ -155,43 +155,52 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Footer actions */}
-                <div className="px-4 pb-4 flex gap-2">
-                  <Link
-                    href={`/dashboard/edit/${order.id}`}
-                    className="flex-1 flex items-center justify-center gap-1.5 text-[12px] py-2 rounded-xl bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors"
-                  >
-                    <i className="ti ti-edit text-[13px]" aria-hidden="true" />
-                    Edit
-                  </Link>
+                <div className="px-4 pb-4">
+                  {order.status === 'pending' ? (
+                    <div className="flex items-center gap-2 text-[12px] text-amber-600 bg-amber-50 border border-amber-100 px-3 py-2 rounded-xl">
+                      <i className="ti ti-clock text-[13px] shrink-0" aria-hidden="true" />
+                      Menunggu konfirmasi pembayaran
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/dashboard/edit/${order.id}`}
+                        className="flex-1 flex items-center justify-center gap-1.5 text-[12px] py-2 rounded-xl bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors"
+                      >
+                        <i className="ti ti-edit text-[13px]" aria-hidden="true" />
+                        Edit
+                      </Link>
 
-                  {isTrial && (
-                    <Link
-                      href="/harga"
-                      className="flex-1 flex items-center justify-center gap-1.5 text-[12px] py-2 rounded-xl border border-[#4A5FA8] text-[#4A5FA8] hover:bg-[#EEF0F9] transition-colors"
-                    >
-                      <i className="ti ti-rocket text-[13px]" aria-hidden="true" />
-                      Upgrade
-                    </Link>
-                  )}
+                      {isTrial && (
+                        <Link
+                          href="/harga"
+                          className="flex-1 flex items-center justify-center gap-1.5 text-[12px] py-2 rounded-xl border border-[#4A5FA8] text-[#4A5FA8] hover:bg-[#EEF0F9] transition-colors"
+                        >
+                          <i className="ti ti-rocket text-[13px]" aria-hidden="true" />
+                          Upgrade
+                        </Link>
+                      )}
 
-                  {!isTrial && (
-                    <Link
-                      href={`/dashboard/tamu/${order.id}`}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:border-[#4A5FA8] hover:text-[#4A5FA8] transition-colors"
-                      title="Kelola Tamu"
-                    >
-                      <i className="ti ti-users text-[15px]" aria-hidden="true" />
-                    </Link>
-                  )}
+                      {!isTrial && (
+                        <Link
+                          href={`/dashboard/tamu/${order.id}`}
+                          className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:border-[#4A5FA8] hover:text-[#4A5FA8] transition-colors"
+                          title="Kelola Tamu"
+                        >
+                          <i className="ti ti-users text-[15px]" aria-hidden="true" />
+                        </Link>
+                      )}
 
-                  {isPro && (
-                    <Link
-                      href={`/dashboard/bantuan/${order.id}`}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:border-[#4A5FA8] hover:text-[#4A5FA8] transition-colors"
-                      title="Bantuan Admin"
-                    >
-                      <i className="ti ti-headset text-[15px]" aria-hidden="true" />
-                    </Link>
+                      {isPro && (
+                        <Link
+                          href={`/dashboard/bantuan/${order.id}`}
+                          className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:border-[#4A5FA8] hover:text-[#4A5FA8] transition-colors"
+                          title="Bantuan Admin"
+                        >
+                          <i className="ti ti-headset text-[15px]" aria-hidden="true" />
+                        </Link>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
