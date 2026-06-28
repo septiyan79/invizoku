@@ -7,7 +7,7 @@ import { sendWhatsApp } from '@/lib/fonnte'
 const VALID_TRANSITIONS: Record<string, string[]> = {
   waiting_admin: ['in_progress'],
   in_progress: ['waiting_review'],
-  waiting_review: ['in_progress', 'done'],
+  waiting_review: ['done'],
 }
 
 const WA_MESSAGES: Partial<Record<string, (name: string) => string>> = {
@@ -37,19 +37,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ orderI
     return NextResponse.json({ error: `Transisi ${order.assist_status} → ${assist_status} tidak valid` }, { status: 400 })
   }
 
-  const isRevision = assist_status === 'in_progress' && order.assist_status === 'waiting_review'
-  const maxRevision = order.package === 'studio' ? 3 : 1
-
-  if (isRevision && order.revision_count >= maxRevision) {
-    return NextResponse.json({ error: 'Jatah revisi habis' }, { status: 400 })
-  }
-
   await prisma.order.update({
     where: { id: orderId },
-    data: {
-      assist_status: assist_status as AssistStatus,
-      ...(isRevision ? { revision_count: { increment: 1 } } : {}),
-    },
+    data: { assist_status: assist_status as AssistStatus },
   })
 
   const msgFn = WA_MESSAGES[assist_status]

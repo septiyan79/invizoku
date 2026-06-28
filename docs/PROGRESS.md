@@ -108,7 +108,7 @@
 - [x] `components/theme-content/Watermark.tsx` — standalone, dipakai semua ThemeShell jika pkg === 'trial'
 - [x] `hooks/useUpload.ts` — upload foto ke Cloudinary
 - [x] `hooks/useGuests.ts` — kelola daftar tamu (dibutuhkan saat dashboard)
-- [ ] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
+- [x] `hooks/useAssist.ts` — status terima beres (dibutuhkan saat dashboard)
 
 ### 3.2 Library Musik
 - [x] `lib/music.ts` — config 8 track (id, judul, artis, url)
@@ -212,12 +212,14 @@
 - [x] Lihat status RSVP per tamu — badge hadir/tidak/menunggu + stats bar
 - [x] Export daftar tamu + status RSVP — client-side CSV download (BOM UTF-8)
 
-### 5.5 Halaman Bantuan Admin (`/dashboard/bantuan/[orderId]`)
-- [ ] Form upload data + catatan ke admin (hanya Pro & Studio)
-- [ ] Tampilkan status pengerjaan admin secara real-time
-- [ ] Tombol "ACC" atau "Minta Revisi" saat status `waiting_review`
-- [ ] Tampilkan sisa jatah revisi ("sisa revisi: X dari Y")
-- [ ] Notifikasi saat admin selesai mengerjakan
+### 5.5 Halaman Bantuan Admin (`/dashboard/bantuan/[orderId]`) ✅
+- [x] Form catatan ke admin + tombol kirim (hanya Pro & Studio)
+- [x] Tampilkan status pengerjaan: idle → waiting_admin → in_progress → waiting_review → done
+- [x] Tombol "ACC" atau "Minta Revisi" saat status `waiting_review` (dengan textarea catatan revisi)
+- [x] Tampilkan sisa jatah revisi ("sisa revisi: X dari Y")
+- [x] Notifikasi WA ke admin saat submit + revisi (via ADMIN_WA_NUMBER env var)
+- [x] `hooks/useAssist.ts` — submit, accept, requestRevision
+- [x] Admin route diupdate: `waiting_review → in_progress` dihapus dari admin (hanya user yang bisa)
 
 ### 5.6 Profil User ✅
 - [x] Edit nama, nomor WA (`/profil`)

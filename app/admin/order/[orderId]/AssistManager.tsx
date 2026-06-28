@@ -15,7 +15,7 @@ const TRANSITIONS: Record<string, { label: string; next: string }[]> = {
   idle: [],
   waiting_admin: [{ label: 'Mulai kerjakan', next: 'in_progress' }],
   in_progress: [{ label: 'Selesai dikerjakan', next: 'waiting_review' }],
-  waiting_review: [{ label: 'Kerjakan ulang (revisi)', next: 'in_progress' }],
+  waiting_review: [],
   done: [],
 }
 
@@ -45,6 +45,15 @@ export default function AssistManager({ orderId, currentStatus, pkg, revisionCou
     } finally {
       setLoading(false)
     }
+  }
+
+  if (status === 'waiting_review') {
+    return (
+      <p className="text-[12px] text-amber-600 flex items-center gap-1.5">
+        <i className="ti ti-clock" />
+        Menunggu user memberikan ACC atau meminta revisi.
+      </p>
+    )
   }
 
   if (transitions.length === 0 && status !== 'done') {
