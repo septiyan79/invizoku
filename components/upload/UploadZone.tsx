@@ -5,18 +5,25 @@ import Image from 'next/image'
 
 interface Props {
   currentUrl?: string
-  onFile: (file: File) => void
+  onFile?: (file: File) => void
+  onFiles?: (files: File[]) => void
+  multiple?: boolean
   uploading?: boolean
   label?: string
   hint?: string
 }
 
-export default function UploadZone({ currentUrl, onFile, uploading, label, hint }: Props) {
+export default function UploadZone({ currentUrl, onFile, onFiles, multiple, uploading, label, hint }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
 
   function handleFiles(files: FileList | null) {
-    if (files?.[0]) onFile(files[0])
+    if (!files || files.length === 0) return
+    if (multiple && onFiles) {
+      onFiles(Array.from(files))
+    } else if (onFile) {
+      onFile(files[0])
+    }
   }
 
   return (
@@ -35,6 +42,7 @@ export default function UploadZone({ currentUrl, onFile, uploading, label, hint 
         ref={inputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
+        multiple={multiple}
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
       />

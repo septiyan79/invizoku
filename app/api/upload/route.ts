@@ -70,15 +70,17 @@ export async function POST(req: Request) {
   const dataUri = `data:${file.type};base64,${buffer.toString('base64')}`
 
   const folder = `undangan/orders/${orderId}`
-  const publicId =
-    type === 'cover' ? `${folder}/cover`
-    : type === 'qris' ? `${folder}/qris`
-    : type === 'gallery' ? `${folder}/gallery_${Date.now()}`
-    : `${folder}/lovestory_${Date.now()}`
+  const fileId =
+    type === 'cover' ? 'cover'
+    : type === 'qris' ? 'qris'
+    : type === 'gallery' ? `gallery_${Date.now()}`
+    : `lovestory_${Date.now()}`
 
   try {
     const result = await cloudinary.uploader.upload(dataUri, {
-      public_id: publicId,
+      folder,
+      asset_folder: folder,
+      public_id: fileId,
       overwrite: true,
     })
 
@@ -86,6 +88,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ url })
   } catch (err) {
     const message = (err as Record<string, unknown>)?.message as string ?? 'Upload gagal'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+export async function DELETE(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { url, orderId } = await req.json() as { url: string; orderId: string }
+  if (!url || !orderId) return NextResponse.json({ error: 'Parameter tidak lengkap' }, { status: 400 })
+
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, user_id: session.user.id, status: 'active' },
+  })
+  if (!order) return NextResponse.json({ error: 'Order tidak ditemukan' }, { status: 404 })
+
+  // Ekstrak public_id dari URL Cloudinary (hapus transformasi dan versi)
+  const match = url.match(/\/upload\/(?:[^/]+\/)*v\d+\/(.+)\.\w+$/)
+  if (!match) return NextResponse.json({ error: 'URL tidak valid' }, { status: 400 })
+
+  const publicId = match[1]
+  if (!publicId.startsWith(`undangan/orders/${orderId}/`)) {
+    return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 })
+  }
+
+  try {
+    await cloudinary.uploader.destroy(publicId)
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    const message = (err as Record<string, unknown>)?.message as string ?? 'Hapus gagal'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

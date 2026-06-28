@@ -54,19 +54,26 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
   }
 
   // ── Gallery ────────────────────────────────────────────────────────────────
-  async function handleGalleryUpload(file: File) {
+  async function handleGalleryUpload(files: File[]) {
     clearError()
-    const url = await upload(file, 'gallery')
-    if (!url) return
-    const next = [...gallery, url]
-    setGallery(next)
-    await save({ gallery: next })
+    let current = [...gallery]
+    for (const file of files) {
+      const limit = GALLERY_LIMIT[pkg]
+      if (limit !== null && current.length >= limit) break
+      const url = await upload(file, 'gallery')
+      if (!url) continue
+      current = [...current, url]
+      setGallery(current)
+      await save({ gallery: current })
+    }
   }
 
-  function removeGalleryItem(index: number) {
+  async function removeGalleryItem(index: number) {
+    const url = gallery[index]
     const next = gallery.filter((_, i) => i !== index)
     setGallery(next)
-    save({ gallery: next })
+    await save({ gallery: next })
+    fetch('/api/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, orderId }) })
   }
 
   // ── Music ──────────────────────────────────────────────────────────────────
@@ -100,10 +107,12 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     save({ love_story: next })
   }
 
-  function removeLoveStoryItem(index: number) {
+  async function removeLoveStoryItem(index: number) {
+    const url = loveStory[index].photo
     const next = loveStory.filter((_, i) => i !== index)
     setLoveStory(next)
-    save({ love_story: next })
+    await save({ love_story: next })
+    fetch('/api/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, orderId }) })
   }
 
   const error = uploadError ?? saveError
@@ -172,10 +181,11 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
         )}
         {(galleryLimit === null || gallery.length < (galleryLimit ?? Infinity)) && (
           <UploadZone
-            onFile={handleGalleryUpload}
+            multiple
+            onFiles={handleGalleryUpload}
             uploading={uploading}
             label="Tambah foto galeri"
-            hint="JPG, PNG, WEBP · Maks. 5MB"
+            hint="JPG, PNG, WEBP · Maks. 5MB · Bisa pilih beberapa sekaligus"
           />
         )}
         {galleryLimit !== null && gallery.length >= galleryLimit && (
