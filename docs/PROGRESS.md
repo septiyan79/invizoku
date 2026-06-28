@@ -257,9 +257,9 @@
 - [ ] Cek order dengan `expires_at <= now() + 14 hari` → kirim notif H-14
 - [ ] Cek order dengan `expires_at <= now() + 1 hari` → kirim notif H-1
 - [ ] Cek order yang sudah expired → ubah status ke `expired`
-- [ ] Cleanup media Cloudinary untuk order expired
 - [ ] Cek tiket terima beres yang sudah 2x24 jam belum selesai → kirim warning ke admin
-- [ ] Hapus permanen data order yang sudah 30 hari sejak expired
+- [ ] Cleanup media Cloudinary untuk order yang sudah 30 hari sejak expired (bukan saat expired)
+- [ ] Bebaskan slug order yang medianya sudah dihapus (30 hari setelah expired)
 
 ### 7.2 Halaman 404 Undangan Expired
 - [ ] Cek `status === 'expired'` di `undangan/[slug]/page.tsx`

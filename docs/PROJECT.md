@@ -562,9 +562,22 @@ Satu halaman yang sama mendeteksi otomatis mode mana yang dipakai. RSVP tracking
 3. Cron cek semua order dengan `expires_at <= now()` dan status `active`
 4. Kirim notifikasi WA ke user di H-14 dan H-1 sebelum expired
 5. Saat expired: status order → `expired`, halaman undangan → 404
-6. Cleanup media Cloudinary saat status berubah ke expired
-7. Data di database ditahan **30 hari** setelah expired, lalu dihapus permanen
-8. Slug dibebaskan kembali setelah data dihapus
+
+### Kebijakan retensi data (setelah expired)
+
+| Data | Tindakan |
+|------|----------|
+| Order record (DB) | **Simpan selamanya** — history bisnis & analytics |
+| Invitation content JSON | **Simpan selamanya** — sangat kecil, berguna jika perpanjang |
+| Data tamu & RSVP | **Simpan selamanya** — berharga untuk user |
+| Ucapan tamu | **Simpan selamanya** — kenangan user |
+| **Media Cloudinary** | **Hapus setelah 30 hari grace period** — mencegah biaya storage membengkak |
+
+**Rationale:** Data DB berukuran sangat kecil sehingga menyimpannya selamanya tidak berdampak signifikan pada biaya. Sebaliknya, media Cloudinary (foto cover, galeri, QRIS, love story) bisa mencapai puluhan MB per order — dihapus setelah grace period untuk menjaga biaya terkendali.
+
+**Grace period 30 hari:** User yang memperpanjang dalam 30 hari setelah expired langsung aktif kembali tanpa upload ulang foto. Setelah 30 hari, foto dihapus permanen dan user perlu upload ulang jika perpanjang.
+
+**Slug:** Dibebaskan saat media Cloudinary dihapus (30 hari setelah expired), bukan saat expired, agar URL tidak langsung bisa diambil orang lain.
 
 ### Perpanjangan masa aktif
 - Dihitung dari `expires_at` lama (bukan dari `now()`), agar sisa masa aktif tidak hilang
@@ -706,7 +719,7 @@ undangan/
 - Format: JPG, PNG, WEBP
 - Ukuran maks: **5MB per file** — semua paket
 - Transformasi otomatis: tambahkan `f_auto,q_auto` di semua URL Cloudinary
-- Cleanup: hapus semua file di `orders/{orderId}/` saat order expired
+- Cleanup: hapus semua file di `orders/{orderId}/` **30 hari setelah expired** (bukan saat expired — ada grace period perpanjangan)
 
 ### Batas foto per paket
 | Jenis foto     | Trial | Basic | Pro   | Studio   |
