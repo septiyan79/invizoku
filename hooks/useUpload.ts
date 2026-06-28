@@ -4,12 +4,8 @@ import { useState } from 'react'
 
 export type UploadType = 'cover' | 'gallery' | 'lovestory' | 'qris'
 
-const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_SIZE = 5 * 1024 * 1024
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
-
-function addTransform(url: string): string {
-  return url.replace('/upload/', '/upload/f_auto,q_auto/')
-}
 
 export function useUpload(orderId: string) {
   const [uploading, setUploading] = useState(false)
@@ -29,39 +25,20 @@ export function useUpload(orderId: string) {
 
     setUploading(true)
     try {
-      // 1. Dapatkan signed params dari server
-      const paramRes = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, type }),
-      })
-      if (!paramRes.ok) {
-        const data = await paramRes.json()
-        setError(data.error ?? 'Gagal mendapatkan izin upload')
-        return null
-      }
-      const { cloudName, apiKey, timestamp, signature, publicId } = await paramRes.json()
-
-      // 2. Upload langsung ke Cloudinary
       const form = new FormData()
       form.append('file', file)
-      form.append('api_key', apiKey)
-      form.append('timestamp', String(timestamp))
-      form.append('signature', signature)
-      form.append('public_id', publicId)
+      form.append('orderId', orderId)
+      form.append('type', type)
 
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        { method: 'POST', body: form }
-      )
-      if (!uploadRes.ok) {
-        setError('Upload ke server gagal, coba lagi')
+      const res = await fetch('/api/upload', { method: 'POST', body: form })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? `Upload gagal (${res.status})`)
         return null
       }
-      const uploadData = await uploadRes.json()
 
-      // 3. Tambahkan transformasi f_auto,q_auto ke URL
-      return addTransform(uploadData.secure_url as string)
+      return data.url as string
     } catch {
       setError('Koneksi bermasalah, coba lagi')
       return null
