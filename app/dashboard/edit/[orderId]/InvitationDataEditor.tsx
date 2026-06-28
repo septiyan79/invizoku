@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useInvitation } from '@/hooks/useInvitation'
+import InvitationPreview, { type InvitationPreviewHandle } from '@/components/InvitationPreview'
 import type { InvitationData } from '@/types/invitation'
 
 interface Props {
@@ -127,8 +128,7 @@ export default function InvitationDataEditor({
   const [data, setData] = useState<InvitationData>(content)
   const [publishing, setPublishing] = useState(false)
   const [isPublished, setIsPublished] = useState(!!publishedAt)
-  const [iframeLoading, setIframeLoading] = useState(true)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const previewRef = useRef<InvitationPreviewHandle>(null)
   const { save, saving, savedAt, error } = useInvitation(orderId)
 
   const isWedding = eventCategories.some((c) => ['wedding', 'tunangan'].includes(c))
@@ -146,14 +146,9 @@ export default function InvitationDataEditor({
     }))
   }
 
-  function reloadPreview() {
-    setIframeLoading(true)
-    iframeRef.current?.contentWindow?.location.reload()
-  }
-
   async function handleSave() {
     await save(data)
-    reloadPreview()
+    previewRef.current?.reload()
   }
 
   async function handlePublish() {
@@ -166,7 +161,7 @@ export default function InvitationDataEditor({
         body: JSON.stringify({ publish: true }),
       })
       if (res.ok) setIsPublished(true)
-      reloadPreview()
+      previewRef.current?.reload()
     } finally {
       setPublishing(false)
     }
@@ -397,54 +392,7 @@ export default function InvitationDataEditor({
       </div>
 
       {/* ── RIGHT: Live Preview ─────────────────────────────────────────────── */}
-      <div className="hidden md:block">
-        <div className="sticky top-8">
-          <div className="flex items-center justify-between mb-2 px-0.5">
-            <p className="text-[12px] font-medium text-neutral-500">Preview</p>
-            <div className="flex gap-1">
-              <button
-                onClick={reloadPreview}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
-                title="Muat ulang"
-              >
-                <i className="ti ti-refresh text-[14px]" aria-hidden="true" />
-              </button>
-              <a
-                href={`/undangan/${slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
-                title="Buka di tab baru"
-              >
-                <i className="ti ti-external-link text-[14px]" aria-hidden="true" />
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="relative rounded-2xl border border-neutral-200 overflow-hidden shadow-sm bg-neutral-100"
-            style={{ height: 'calc(100vh - 200px)', minHeight: '520px' }}
-          >
-            {iframeLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#FAFAF9] gap-3 z-10">
-                <div className="w-5 h-5 border-2 border-[#4A5FA8] border-t-transparent rounded-full animate-spin" />
-                <p className="text-[11px] text-neutral-400">Memuat preview...</p>
-              </div>
-            )}
-            <iframe
-              ref={iframeRef}
-              src={`/undangan/${slug}`}
-              className="w-full h-full border-0"
-              title="Preview undangan"
-              onLoad={() => setIframeLoading(false)}
-            />
-          </div>
-
-          <p className="text-[10px] text-neutral-400 text-center mt-2">
-            Klik Simpan untuk memperbarui
-          </p>
-        </div>
-      </div>
+      <InvitationPreview ref={previewRef} slug={slug} hint="Klik Simpan untuk memperbarui" />
 
     </div>
   )

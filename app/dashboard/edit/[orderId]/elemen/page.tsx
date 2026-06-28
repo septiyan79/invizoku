@@ -41,19 +41,6 @@ export default async function ElemenPage({ params }: PageProps) {
         </p>
       </div>
 
-      {/* Tab nav */}
-      <div className="flex gap-1 mb-6 bg-white border border-neutral-100 rounded-xl p-1 w-fit">
-        <Link
-          href={`/dashboard/edit/${orderId}`}
-          className="text-[13px] px-4 py-2 rounded-lg text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 transition-colors"
-        >
-          Data Acara
-        </Link>
-        <span className="text-[13px] px-4 py-2 rounded-lg bg-[#4A5FA8] text-white font-medium">
-          Foto &amp; Elemen
-        </span>
-      </div>
-
       <ElemenEditor
         orderId={order.id}
         pkg={order.package}

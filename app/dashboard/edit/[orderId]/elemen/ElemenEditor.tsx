@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import UploadZone from '@/components/upload/UploadZone'
+import InvitationPreview, { type InvitationPreviewHandle } from '@/components/InvitationPreview'
 import { useUpload } from '@/hooks/useUpload'
 import { useInvitation } from '@/hooks/useInvitation'
 import { musicLibrary } from '@/lib/music'
@@ -32,6 +33,7 @@ const LOVESTORY_LIMIT: Record<string, number | null> = {
 export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Props) {
   const { upload, uploading, error: uploadError, clearError } = useUpload(orderId)
   const { save, saving, savedAt, error: saveError } = useInvitation(orderId)
+  const previewRef = useRef<InvitationPreviewHandle>(null)
 
   const [coverPhoto, setCoverPhoto] = useState(initialContent.cover_photo ?? '')
   const [gallery, setGallery] = useState<string[]>(initialContent.gallery ?? [])
@@ -51,6 +53,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     if (!url) return
     setCoverPhoto(url)
     await save({ cover_photo: url })
+    previewRef.current?.reload()
   }
 
   // ── Gallery ────────────────────────────────────────────────────────────────
@@ -65,6 +68,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
       current = [...current, url]
       setGallery(current)
       await save({ gallery: current })
+      previewRef.current?.reload()
     }
   }
 
@@ -73,6 +77,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     const next = gallery.filter((_, i) => i !== index)
     setGallery(next)
     await save({ gallery: next })
+    previewRef.current?.reload()
     fetch('/api/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, orderId }) })
   }
 
@@ -80,6 +85,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
   async function handleMusicChange(id: string) {
     setMusicId(id)
     await save({ music_id: id })
+    previewRef.current?.reload()
   }
 
   // ── QRIS ──────────────────────────────────────────────────────────────────
@@ -89,6 +95,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     if (!url) return
     setQrisUrl(url)
     await save({ angpao: { ...initialContent.angpao, qris_url: url } })
+    previewRef.current?.reload()
   }
 
   // ── Love Story ─────────────────────────────────────────────────────────────
@@ -99,6 +106,7 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     const next: LoveStoryItem[] = [...loveStory, { photo: url, caption: '', date: '' }]
     setLoveStory(next)
     await save({ love_story: next })
+    previewRef.current?.reload()
   }
 
   function updateLoveStoryItem(index: number, field: 'caption' | 'date', value: string) {
@@ -112,13 +120,28 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
     const next = loveStory.filter((_, i) => i !== index)
     setLoveStory(next)
     await save({ love_story: next })
+    previewRef.current?.reload()
     fetch('/api/upload', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, orderId }) })
   }
 
   const error = uploadError ?? saveError
 
   return (
-    <div className="space-y-4 max-w-2xl">
+    <div className="md:grid md:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_400px] md:gap-6 lg:gap-8 md:items-start">
+      <div className="space-y-4">
+
+      {/* Tab nav */}
+      <div className="flex gap-1 mb-6">
+        <Link
+          href={`/dashboard/edit/${orderId}`}
+          className="text-[13px] px-4 py-2 rounded-xl text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 transition-colors"
+        >
+          Data Acara
+        </Link>
+        <span className="text-[13px] px-4 py-2 rounded-xl bg-[#4A5FA8] text-white font-medium">
+          Foto &amp; Elemen
+        </span>
+      </div>
 
       {/* Global error / save feedback */}
       {error && (
@@ -323,6 +346,8 @@ export default function ElemenEditor({ orderId, pkg, slug, initialContent }: Pro
         </Section>
       )}
 
+      </div>
+      <InvitationPreview ref={previewRef} slug={slug} />
     </div>
   )
 }
