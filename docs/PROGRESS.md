@@ -275,11 +275,16 @@
 
 ## FASE 8 — SEO & PERFORMA
 
-- [ ] Audit semua halaman publik: meta title, description, OG image
-- [ ] Test dynamic OG image generator
-- [ ] Submit sitemap ke Google Search Console
-- [ ] Lighthouse audit: target score > 90 untuk halaman undangan
-- [ ] Test ISR: pastikan halaman undangan update setelah edit
+- [x] Audit semua halaman publik: meta title, description, OG image (landing, katalog, harga — semua sudah ada)
+- [x] Halaman auth (`/login`, `/register`, dll) — `noindex` via `app/(auth)/layout.tsx`, title per halaman server component
+- [x] Dynamic OG image generator `/og` — sudah ada, parameter `title` dan `sub`
+- [x] Sitemap (`/sitemap.xml`) — 3 halaman publik
+- [x] Robots.txt — blokir `/dashboard`, `/admin`, `/checkout`, `/profil`, `/undangan`, `/api`
+- [x] Halaman undangan — `noindex` sudah ada di `generateMetadata`
+- [ ] Test OG image di browser — manual (buka `/og?title=Test`)
+- [ ] Submit sitemap ke Google Search Console — manual, butuh domain live
+- [ ] Lighthouse audit — manual, butuh browser
+- [ ] Test ISR — manual (edit undangan, cek halaman update)
 
 ---
 
