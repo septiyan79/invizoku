@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 const navLinks = [
   { href: '/katalog', label: 'Katalog tema' },
@@ -12,6 +13,8 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { status } = useSession()
+  const isLoggedIn = status === 'authenticated'
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -46,18 +49,30 @@ export default function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-2">
-          <Link
-            href="/login"
-            className="text-sm px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-100 transition-colors"
-          >
-            Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="text-sm px-4 py-2 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium"
-          >
-            Coba gratis
-          </Link>
+          {isLoggedIn ? (
+            <Link
+              href="/dashboard"
+              className="text-sm px-4 py-2 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium flex items-center gap-1.5"
+            >
+              <i className="ti ti-layout-dashboard text-[14px]" aria-hidden="true" />
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-100 transition-colors"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="text-sm px-4 py-2 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium"
+              >
+                Coba gratis
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -100,20 +115,33 @@ export default function Navbar() {
             ))}
           </div>
           <div className="flex flex-col gap-2 mt-4">
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="text-sm text-center py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-100 transition-colors"
-            >
-              Masuk
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMenuOpen(false)}
-              className="text-sm text-center py-2.5 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium"
-            >
-              Coba gratis
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm text-center py-2.5 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium flex items-center justify-center gap-1.5"
+              >
+                <i className="ti ti-layout-dashboard text-[14px]" aria-hidden="true" />
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-center py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-100 transition-colors"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-center py-2.5 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium"
+                >
+                  Coba gratis
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

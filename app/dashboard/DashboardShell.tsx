@@ -82,10 +82,12 @@ export default function DashboardShell({ orders, primaryOrder, user, children }:
     ...(orderId && isPro
       ? [{ href: `/dashboard/bantuan/${orderId}`, label: 'Bantuan Admin', icon: 'ti-headset' }]
       : []),
+    { href: '/profil', label: 'Pengaturan', icon: 'ti-settings' },
   ]
 
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard'
+    if (href === '/profil') return pathname.startsWith('/profil')
     const section = href.split('/').slice(0, 3).join('/')
     return pathname.startsWith(section)
   }
@@ -185,15 +187,20 @@ export default function DashboardShell({ orders, primaryOrder, user, children }:
 
       {/* User info + logout */}
       <div className="px-3 py-4 border-t border-neutral-100 shrink-0">
-        <div className="flex items-center gap-2.5 mb-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#EEF0F9] flex items-center justify-center shrink-0">
+        <Link
+          href="/profil"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-2.5 mb-2.5 px-1 py-1.5 rounded-xl hover:bg-neutral-50 transition-colors group"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#EEF0F9] flex items-center justify-center shrink-0 group-hover:bg-[#DDE1F5] transition-colors">
             <span className="text-[11px] font-semibold text-[#4A5FA8]">{initials}</span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-[12px] font-medium text-neutral-700 truncate">{user.name}</p>
             <p className="text-[10px] text-neutral-400 truncate">{user.email}</p>
           </div>
-        </div>
+          <i className="ti ti-chevron-right text-[12px] text-neutral-300 group-hover:text-neutral-400 shrink-0" aria-hidden="true" />
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
@@ -220,9 +227,13 @@ export default function DashboardShell({ orders, primaryOrder, user, children }:
           inviz<span className="text-[#4A5FA8]">oku</span>
           <span className="text-[#C9A55A]">.</span>
         </span>
-        <div className="w-9 h-9 rounded-full bg-[#EEF0F9] flex items-center justify-center">
+        <Link
+          href="/profil"
+          className="w-9 h-9 rounded-full bg-[#EEF0F9] flex items-center justify-center hover:bg-[#DDE1F5] transition-colors"
+          aria-label="Pengaturan akun"
+        >
           <span className="text-[11px] font-semibold text-[#4A5FA8]">{initials}</span>
-        </div>
+        </Link>
       </header>
 
       {/* Mobile overlay */}
