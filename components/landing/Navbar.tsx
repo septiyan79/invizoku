@@ -13,8 +13,9 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const isLoggedIn = status === 'authenticated'
+  const isAdmin = session?.user?.role === 'admin'
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -51,11 +52,11 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           {isLoggedIn ? (
             <Link
-              href="/dashboard"
+              href={isAdmin ? '/admin' : '/dashboard'}
               className="text-sm px-4 py-2 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium flex items-center gap-1.5"
             >
-              <i className="ti ti-layout-dashboard text-[14px]" aria-hidden="true" />
-              Dashboard
+              <i className={`ti ${isAdmin ? 'ti-shield' : 'ti-layout-dashboard'} text-[14px]`} aria-hidden="true" />
+              {isAdmin ? 'Admin Panel' : 'Dashboard'}
             </Link>
           ) : (
             <>
@@ -117,12 +118,12 @@ export default function Navbar() {
           <div className="flex flex-col gap-2 mt-4">
             {isLoggedIn ? (
               <Link
-                href="/dashboard"
+                href={isAdmin ? '/admin' : '/dashboard'}
                 onClick={() => setMenuOpen(false)}
                 className="text-sm text-center py-2.5 rounded-lg bg-[#4A5FA8] text-white hover:bg-[#2D4080] transition-colors font-medium flex items-center justify-center gap-1.5"
               >
-                <i className="ti ti-layout-dashboard text-[14px]" aria-hidden="true" />
-                Dashboard
+                <i className={`ti ${isAdmin ? 'ti-shield' : 'ti-layout-dashboard'} text-[14px]`} aria-hidden="true" />
+                {isAdmin ? 'Admin Panel' : 'Dashboard'}
               </Link>
             ) : (
               <>

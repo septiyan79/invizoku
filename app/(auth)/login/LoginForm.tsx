@@ -39,7 +39,9 @@ export default function LoginForm() {
       setError('Email atau password salah, atau email belum diverifikasi')
       return
     }
-    router.push(callbackUrl)
+    const sessionRes = await fetch('/api/auth/session')
+    const session = await sessionRes.json()
+    router.push(session?.user?.role === 'admin' ? '/admin' : callbackUrl)
     router.refresh()
   }
 

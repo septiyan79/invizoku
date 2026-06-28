@@ -226,29 +226,33 @@
 
 ---
 
-## FASE 6 — DASHBOARD ADMIN
+## FASE 6 — DASHBOARD ADMIN ✅
 
-### 6.1 Overview Order (`/admin`)
-- [ ] Tabel semua order: status, paket, user, tanggal
-- [ ] Filter: status, paket, assist_status
-- [ ] Badge khusus untuk order yang butuh perhatian (SLA warning, waiting_review)
-- [ ] Urutan Studio (prioritas) di atas Pro untuk antrian terima beres
+### 6.1 Overview Order (`/admin`) ✅
+- [x] Tabel semua order: status, paket, user, tanggal
+- [x] Filter client-side: status, paket, assist_status, pencarian nama/email/slug
+- [x] Stats card: total, aktif, pending bayar, perlu dibantu
+- [x] Studio/Pro dengan assist_status menunggu muncul lebih atas
 
-### 6.2 Editor Order Admin (`/admin/order/[orderId]`)
-- [ ] Edit semua field undangan atas nama user
-- [ ] Upload foto atas nama user
-- [ ] Tombol "Selesai Dikerjakan" → ubah `assist_status` ke `waiting_review`
-- [ ] Kirim notifikasi WA ke user otomatis
+### 6.2 Detail Order Admin (`/admin/order/[orderId]`) ✅
+- [x] Tampilkan info order + user lengkap
+- [x] Tombol langsung ke profil user, WA, dan lihat undangan
+- [x] `AssistManager` — ubah assist_status via transisi valid, kirim notif WA ke user
+- [x] `PATCH /api/admin/order/[orderId]` — validasi transisi, increment revision_count
+- [ ] Edit semua field undangan atas nama user (ditunda — tunggu Fase 5.5)
+- [ ] Upload foto atas nama user (ditunda — tunggu Fase 5.5)
 
-### 6.3 Kelola Tema (`/admin/tema`)
-- [ ] Tambah tema baru (nama, kategori, tipe, component_key, upload preview)
-- [ ] Aktifkan / nonaktifkan tema
-- [ ] Edit metadata tema
+### 6.3 Kelola Tema (`/admin/tema`) ✅
+- [x] Tabel semua tema: nama, component_key, kategori, style, jumlah order, status
+- [x] Toggle aktif/nonaktif per tema
+- [x] `PATCH /api/admin/tema/[temaId]`
+- [ ] Tambah tema baru (ditunda — butuh upload preview + mapping component_key ke kode)
 
-### 6.4 Kelola User (`/admin/users`)
-- [ ] Daftar semua user dengan pencarian
-- [ ] Detail user: profil + riwayat order
-- [ ] Suspend / aktifkan akun user
+### 6.4 Kelola User (`/admin/users`) ✅
+- [x] Daftar semua user: nama, email, WA, role, email verified, jumlah order
+- [x] Detail user (`/admin/users/[userId]`): profil + riwayat order lengkap
+- [x] Tombol hubungi WA langsung dari halaman user
+- [ ] Suspend / aktifkan akun user (ditunda — butuh field `suspended` di DB)
 
 ---
 
@@ -327,3 +331,8 @@
 - [ ] Dashboard reseller / multi-klien
 - [ ] Harga upgrade antar paket (finalisasi angka)
 - [ ] Migrasi Fonnte ke WhatsApp Cloud API resmi Meta (saat traffic besar)
+- [ ] **Order Manual** — admin buat order untuk customer yang pesan via WA (detail di PROJECT.md bagian 11):
+  - Tambah `payment_method` enum (`midtrans | manual`) ke schema + migrasi
+  - Halaman `/admin/order/baru` — form cari/buat user + pilih tema/paket + catat referensi bayar
+  - `POST /api/admin/order` — buat akun (jika baru, password auto-generate, email_verified: true) + buat order active + notif WA
+  - Update webhook Midtrans untuk set `payment_method: midtrans` secara eksplisit

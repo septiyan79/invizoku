@@ -178,7 +178,8 @@ user_id         UUID REFERENCES users(id)
 theme_id        UUID REFERENCES themes(id)
 package         ENUM('trial', 'basic', 'pro', 'studio') NOT NULL
 status          ENUM('pending', 'active', 'expired') DEFAULT 'pending'
-payment_id      VARCHAR                 -- transaction ID dari Midtrans
+payment_id      VARCHAR                 -- transaction ID dari Midtrans (order manual: diisi admin, e.g. "TRF-20260628-BCA-001")
+payment_method  ENUM('midtrans', 'manual') DEFAULT 'midtrans'  -- midtrans = online, manual = admin input
 slug            VARCHAR UNIQUE NOT NULL -- URL undangan, e.g. 'pernikahan-budi-ani'
 assist_status   ENUM('idle', 'waiting_admin', 'in_progress', 'waiting_review', 'done') DEFAULT 'idle'
 revision_count  INT DEFAULT 0           -- jumlah revisi yang sudah dipakai
@@ -642,7 +643,38 @@ export async function POST(req: Request) {
 
 ---
 
-## 11. ALUR TERIMA BERES
+## 11. ORDER MANUAL (PASCA-LAUNCH)
+
+### Latar belakang
+Customer yang memesan via WhatsApp (di luar website) dapat dilayani admin tanpa harus customer mendaftar sendiri.
+
+### Alur
+1. Customer kontak admin via WA → admin buka `/admin/order/baru`
+2. Admin cari user existing (by email/WA) **atau** buat akun baru:
+   - Input: email, nama, nomor WA customer
+   - Password di-generate otomatis (format: `Inv{6 char acak}!`)
+   - `email_verified: true` otomatis — admin sudah verifikasi identitas customer secara manual via WA
+3. Admin pilih tema, paket, slug, dan catat referensi pembayaran (contoh: `TRF-20260628-BCA-001`)
+4. Submit → order langsung `status: active`, `payment_method: manual`
+5. Customer dapat notif WA berisi: link undangan + kredensial login (jika akun baru) + instruksi ganti password
+
+### Aturan
+- Hanya admin yang bisa buat order manual (endpoint `/api/admin/order` POST, cek `role === 'admin'`)
+- Password generate: 12 karakter, kombinasi huruf besar-kecil + angka + `!` di akhir
+- Admin wajib sampaikan password ke customer via WA dan minta ganti setelah login pertama
+- Order manual tidak melalui Midtrans — tidak ada webhook, tidak ada snap token
+- `payment_id` diisi admin secara manual sebagai referensi audit
+
+### Perubahan schema yang dibutuhkan
+```sql
+ALTER TABLE orders ADD COLUMN payment_method VARCHAR DEFAULT 'midtrans';
+-- Nilai: 'midtrans' | 'manual'
+```
+Tambahkan enum `PaymentMethod` di Prisma schema + migrasi sebelum implementasi.
+
+---
+
+## 12. ALUR TERIMA BERES
 
 ### Status flow
 ```
